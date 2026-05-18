@@ -56,14 +56,10 @@ git push origin v0.1.0
 
 ## Models
 
-### `example`
+### `mac_mini`
 
-Source: [`src/example.scad`](src/example.scad)
+Source: [`src/mac_mini.scad`](src/mac_mini.scad)
 
-| Variant | Preview |
-| --- | --- |
-| `large` | ![example.large](previews/example.large.png) |
-| `medium` | ![example.medium](previews/example.medium.png) |
-| `small` | ![example.small](previews/example.small.png) |
+![mac_mini](previews/mac_mini.png)
 
 <!-- END MODELS -->
