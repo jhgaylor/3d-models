@@ -13,6 +13,7 @@ from __future__ import annotations
 import argparse
 import json
 import os
+import re
 import shutil
 import subprocess
 import sys
@@ -88,11 +89,39 @@ def plan_targets() -> list[Target]:
     return targets
 
 
+_USE_INCLUDE_RE = re.compile(r'^\s*(?:use|include)\s*<([^>]+)>', re.MULTILINE)
+_deps_cache: dict[Path, frozenset[Path]] = {}
+
+
+def collect_scad_deps(scad: Path) -> frozenset[Path]:
+    # Return the file plus every .scad it transitively use<>/include<>'s.
+    # Seeding the cache with {self} before recursing breaks any cycles.
+    scad = scad.resolve()
+    cached = _deps_cache.get(scad)
+    if cached is not None:
+        return cached
+    _deps_cache[scad] = frozenset({scad})
+    deps: set[Path] = {scad}
+    try:
+        text = scad.read_text()
+    except OSError:
+        return _deps_cache[scad]
+    for m in _USE_INCLUDE_RE.finditer(text):
+        dep = (scad.parent / m.group(1)).resolve()
+        if dep.exists():
+            deps |= collect_scad_deps(dep)
+    result = frozenset(deps)
+    _deps_cache[scad] = result
+    return result
+
+
 def needs_rebuild(t: Target) -> bool:
     if not t.out.exists():
         return True
     out_mtime = t.out.stat().st_mtime
-    deps = [t.scad] + ([t.preset_file] if t.preset_file else [])
+    deps: set[Path] = set(collect_scad_deps(t.scad))
+    if t.preset_file:
+        deps.add(t.preset_file)
     return any(d.stat().st_mtime > out_mtime for d in deps)
 
 
