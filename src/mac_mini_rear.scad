@@ -56,9 +56,14 @@ post_size = 5;
 post_height = 8;
 
 /* [Cable comb] */
-slot_count = 3;
+slot_count = 2;      // power + ethernet per mini (USB to drive stays in-column)
 slot_width = 7;
 slot_depth = 18;     // from top of wall down
+
+/* [Strain relief] */
+zip_tie_hole_d      = 4;   // 4mm clears any standard zip tie
+zip_tie_hole_offset = 5;   // gap from slot edge to hole center
+zip_tie_hole_z      = 5;   // height above floor (below the slot, above floor)
 
 $fn = 64;
 
@@ -80,6 +85,7 @@ module mac_mini_rear() {
             _drive_corner_posts();
         }
         _slot_cutouts();
+        _zip_tie_holes();
     }
 }
 
@@ -122,6 +128,22 @@ module _slot_cutouts() {
                   slot_wall_y - 0.01,
                   floor_thickness + slot_wall_height - slot_depth])
             _slot_shape();
+    }
+}
+
+module _zip_tie_holes() {
+    // Two horizontal holes per slot (left + right) so a zip tie can
+    // wrap up over the cable: in left hole from rear → up around
+    // cable in slot → down through right hole → cinch.
+    span = unit_w - 2*wall_thickness;
+    pitch = span / slot_count;
+    dx = slot_width/2 + zip_tie_hole_offset;
+    for (i = [0 : slot_count - 1]) {
+        cx = wall_thickness + pitch*(i + 0.5);
+        for (xs = [cx - dx, cx + dx])
+            translate([xs, slot_wall_y - 0.01, floor_thickness + zip_tie_hole_z])
+                rotate([-90, 0, 0])
+                    cylinder(h = slot_wall_thickness + 0.02, d = zip_tie_hole_d);
     }
 }
 
