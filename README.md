@@ -62,4 +62,16 @@ Source: [`src/mac_mini.scad`](src/mac_mini.scad)
 
 ![mac_mini](previews/mac_mini.png)
 
+### `mac_mini_cradle`
+
+Source: [`src/mac_mini_cradle.scad`](src/mac_mini_cradle.scad)
+
+![mac_mini_cradle](previews/mac_mini_cradle.png)
+
+### `mini_shelf`
+
+Source: [`src/mini_shelf.scad`](src/mini_shelf.scad)
+
+![mini_shelf](previews/mini_shelf.png)
+
 <!-- END MODELS -->
