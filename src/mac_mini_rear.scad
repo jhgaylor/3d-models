@@ -44,12 +44,10 @@ drive_pocket_clearance = 1.0;
 /* [Unit dimensions] */
 front_margin    = 8;    // drive tray front margin
 between_margin  = 5;    // gap between drive rear and slot wall
-channel_depth   = 55;   // depth of rear channel section
 floor_thickness = 2;
 side_wall_height = 17;
 slot_wall_thickness = 3;
 slot_wall_height = 30;
-back_wall_height = 17;
 
 /* [Drive registration posts] */
 post_size = 5;
@@ -74,9 +72,10 @@ unit_w = mini_w + 2*(clearance + wall_thickness);
 drive_x = (unit_w - drive_w) / 2;
 drive_y = front_margin;
 
-// Slotted comb wall is positioned just behind the drive
+// Slotted comb wall is positioned just behind the drive; it's also
+// the rear face of the unit. Cables drop straight down off its back.
 slot_wall_y = drive_y + drive_l + between_margin;
-unit_d = slot_wall_y + slot_wall_thickness + channel_depth;
+unit_d = slot_wall_y + slot_wall_thickness;
 
 module mac_mini_rear() {
     difference() {
@@ -98,13 +97,9 @@ module _shell() {
     translate([unit_w - wall_thickness, 0, 0])
         cube([wall_thickness, unit_d, floor_thickness + side_wall_height]);
 
-    // Slotted comb wall (slots cut later in _slot_cutouts)
+    // Slotted comb wall — also serves as the unit's rear face
     translate([0, slot_wall_y, 0])
         cube([unit_w, slot_wall_thickness, floor_thickness + slot_wall_height]);
-
-    // Back wall (rear of channel)
-    translate([0, unit_d - wall_thickness, 0])
-        cube([unit_w, wall_thickness, floor_thickness + back_wall_height]);
 }
 
 module _drive_corner_posts() {
