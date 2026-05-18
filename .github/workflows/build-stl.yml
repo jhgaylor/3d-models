@@ -1,4 +1,4 @@
-name: Build STL
+name: Build models
 
 on:
   push:
@@ -20,21 +20,25 @@ jobs:
       - name: Install OpenSCAD
         run: |
           sudo apt-get update
-          sudo apt-get install -y openscad
+          sudo apt-get install -y openscad xvfb
 
-      - name: Build all STL files
-        run: make -j"$(nproc)"
+      - name: Build (STL + 3MF + previews, manifold-checked)
+        run: xvfb-run -a python3 tools/build.py
 
-      - name: Upload build artifacts
+      - name: Upload models artifact
         uses: actions/upload-artifact@v4
         with:
-          name: stl-files
-          path: build/**/*.stl
+          name: models
+          path: |
+            build/**/*.stl
+            build/**/*.3mf
           if-no-files-found: error
 
-      - name: Attach STLs to release
+      - name: Attach STL + 3MF to release
         if: startsWith(github.ref, 'refs/tags/v')
         uses: softprops/action-gh-release@v2
         with:
-          files: build/**/*.stl
+          files: |
+            build/**/*.stl
+            build/**/*.3mf
           generate_release_notes: true

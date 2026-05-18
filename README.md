@@ -1,36 +1,69 @@
 # 3d-models
 
-OpenSCAD source for 3D-printable models. STL files are built automatically by GitHub Actions on every push and attached to GitHub Releases when you push a version tag.
+OpenSCAD source for 3D-printable models. Every `.scad` file builds to **STL** (for slicing), **3MF** (richer modern format), and a **PNG preview** (shown below). Builds run automatically in GitHub Actions: artifacts on every push, attached to GitHub Releases on version tags.
 
 ## Layout
 
 ```
-src/                 # OpenSCAD source (.scad) — one file per model
-build/               # Generated STLs (gitignored)
-Makefile             # Builds every src/*.scad → build/*.stl
-.github/workflows/   # CI: builds STLs, uploads artifacts, attaches to releases
+src/                 # OpenSCAD source (.scad) and optional .json customizer sidecars
+build/               # Generated STL + 3MF (gitignored)
+previews/            # Generated PNG renders (tracked in git so README renders on GitHub)
+tools/build.py       # Build orchestrator (variants, parallelism, mtime-based rebuild)
+Makefile             # Thin wrapper: make / make clean / make list / make force
+.github/workflows/   # CI: build, manifold check, artifact upload, release attach
 ```
 
-Add new models by dropping a `.scad` file under `src/`. Subdirectories are preserved in `build/`.
+## Variant matrix (parametric models)
+
+Drop a sidecar `src/<name>.json` next to `src/<name>.scad` using OpenSCAD's customizer format. Each entry under `parameterSets` produces one output:
+
+```
+src/box.scad
+src/box.json     →   build/box.small.stl + .3mf + previews/box.small.png
+                     build/box.large.stl + .3mf + previews/box.large.png
+```
+
+No sidecar → a single output set: `build/<name>.{stl,3mf}` + `previews/<name>.png`.
+
+The customizer JSON is what OpenSCAD's GUI saves when you "Add new parameter set" — so you can author presets visually and the build picks them up.
 
 ## Local build
 
 Install OpenSCAD (https://openscad.org/downloads.html), then:
 
 ```
-make            # builds all STLs into build/
-make clean      # removes build/
-make list       # shows discovered sources and outputs
+make             # build STL + 3MF + previews; regenerate README models section
+make force       # rebuild everything regardless of mtime
+make list        # show planned targets (sources → outputs)
+make clean       # wipe build/ and previews/*.png
 ```
 
-The Makefile auto-detects `/Applications/OpenSCAD.app` on macOS. On Linux it uses the `openscad` binary on `PATH`. Override with `make OPENSCAD=/path/to/openscad`.
+On macOS the build auto-detects `/Applications/OpenSCAD.app`. Elsewhere it uses `openscad` on `PATH`. Override with `OPENSCAD=/path/to/openscad make`.
 
-## Getting STL files
+Builds run with `--hardwarnings`: non-manifold geometry, unset variables, and other warnings fail the build instead of silently producing broken STLs.
 
-- **Latest build:** Actions tab → most recent run → download the `stl-files` artifact.
-- **Versioned release:** push a tag like `v0.1.0` — the workflow attaches every STL to the GitHub Release.
+## Getting model files
+
+- **Latest build:** Actions tab → most recent run → download the `models` artifact (contains all STL + 3MF).
+- **Versioned release:** push a tag like `v0.1.0` — CI attaches every STL + 3MF to the GitHub Release.
 
 ```
 git tag v0.1.0
 git push origin v0.1.0
 ```
+
+<!-- BEGIN MODELS -->
+
+## Models
+
+### `example`
+
+Source: [`src/example.scad`](src/example.scad)
+
+| Variant | Preview |
+| --- | --- |
+| `large` | ![example.large](previews/example.large.png) |
+| `medium` | ![example.medium](previews/example.medium.png) |
+| `small` | ![example.small](previews/example.small.png) |
+
+<!-- END MODELS -->
