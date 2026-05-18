@@ -1,0 +1,4 @@
+build/
+*.stl
+!src/**/*.stl
+.DS_Store
