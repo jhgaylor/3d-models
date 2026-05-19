@@ -1,6 +1,6 @@
 {
     "parameterSets": {
-        "long_rail":  { "part": "long_rail"  },
-        "short_rail": { "part": "short_rail" }
+        "long_rail": { "part": "long_rail" },
+        "divider":   { "part": "divider"   }
     }
 }
