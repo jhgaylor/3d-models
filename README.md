@@ -62,6 +62,30 @@ Source: [`src/mac_mini.scad`](src/mac_mini.scad)
 
 ![mac_mini](previews/mac_mini.png)
 
+### `mac_mini_align_band`
+
+Source: [`src/mac_mini_align_band.scad`](src/mac_mini_align_band.scad)
+
+| Variant | Preview |
+| --- | --- |
+| `front_bar` | ![mac_mini_align_band.front_bar](previews/mac_mini_align_band.front_bar.png) |
+| `rear_bar` | ![mac_mini_align_band.rear_bar](previews/mac_mini_align_band.rear_bar.png) |
+
+### `mac_mini_align_grid`
+
+Source: [`src/mac_mini_align_grid.scad`](src/mac_mini_align_grid.scad)
+
+| Variant | Preview |
+| --- | --- |
+| `long_rail` | ![mac_mini_align_grid.long_rail](previews/mac_mini_align_grid.long_rail.png) |
+| `short_rail` | ![mac_mini_align_grid.short_rail](previews/mac_mini_align_grid.short_rail.png) |
+
+### `mac_mini_align_rails`
+
+Source: [`src/mac_mini_align_rails.scad`](src/mac_mini_align_rails.scad)
+
+![mac_mini_align_rails](previews/mac_mini_align_rails.png)
+
 ### `mac_mini_cradle`
 
 Source: [`src/mac_mini_cradle.scad`](src/mac_mini_cradle.scad)
