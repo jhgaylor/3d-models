@@ -80,4 +80,10 @@ Source: [`src/mini_shelf.scad`](src/mini_shelf.scad)
 
 ![mini_shelf](previews/mini_shelf.png)
 
+### `puffco_knife_jar_tray`
+
+Source: [`src/puffco_knife_jar_tray.scad`](src/puffco_knife_jar_tray.scad)
+
+![puffco_knife_jar_tray](previews/puffco_knife_jar_tray.png)
+
 <!-- END MODELS -->
