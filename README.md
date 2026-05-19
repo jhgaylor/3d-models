@@ -84,6 +84,9 @@ Source: [`src/mini_shelf.scad`](src/mini_shelf.scad)
 
 Source: [`src/puffco_knife_jar_tray.scad`](src/puffco_knife_jar_tray.scad)
 
-![puffco_knife_jar_tray](previews/puffco_knife_jar_tray.png)
+| Variant | Preview |
+| --- | --- |
+| `lid` | ![puffco_knife_jar_tray.lid](previews/puffco_knife_jar_tray.lid.png) |
+| `tray` | ![puffco_knife_jar_tray.tray](previews/puffco_knife_jar_tray.tray.png) |
 
 <!-- END MODELS -->

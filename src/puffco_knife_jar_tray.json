@@ -1,0 +1,6 @@
+{
+    "parameterSets": {
+        "tray": { "part": "tray" },
+        "lid":  { "part": "lid"  }
+    }
+}
