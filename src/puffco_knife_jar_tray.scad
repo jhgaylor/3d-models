@@ -64,14 +64,12 @@ mag_h = 3.2;   // pocket depth (magnet + 0.2 mm clearance)
 
 mag_lx = wall + jMarX / 2;       // X centre of left margin strip
 mag_rx = j2x + jw + jMarX / 2;   // X centre of right margin strip
-mag_fy = wall + jw * 0.28;       // Y at ~28 % of jar section depth
-mag_by = wall + jw * 0.72;       // Y at ~72 % of jar section depth
+mag_cy = wall + jw / 2;          // Y centre of jar section
 
+// 2 positions × 2 parts = 4 magnets total
 magnets = [
-    [mag_lx, mag_fy],
-    [mag_lx, mag_by],
-    [mag_rx, mag_fy],
-    [mag_rx, mag_by],
+    [mag_lx, mag_cy],
+    [mag_rx, mag_cy],
 ];
 
 /* ── Helpers ─────────────────────────────────────────── */
@@ -162,4 +160,4 @@ echo(str("Knife above rim   : ~", knife_protrusion, " mm"));
 echo(str("Jars  above rim   : ~", jar_protrusion,   " mm"));
 echo(str("Lid jar recess    : ", jar_recess,   " mm deep"));
 echo(str("Lid knife recess  : ", knife_recess, " mm deep"));
-echo("Magnet spec       : 4× neodymium disc 6 mm ø × 3 mm thick");
+echo("Magnet spec       : 4× neodymium disc 6 mm ø × 3 mm thick (2 in tray, 2 in lid)");

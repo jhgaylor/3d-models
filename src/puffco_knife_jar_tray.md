@@ -21,17 +21,18 @@ The lid prints upside-down (open face up) to avoid supports inside the recesses.
 Available from most hardware stores or online (search "6x3 neodymium disc magnet").
 N52 grade gives the strongest hold but N35–N52 all work.
 
+2 magnets go in the **tray** and 2 go in the **lid** — 4 total, one per pocket.
+
 ## Magnet installation
 
-The tray has **4 pockets on its top face** and the lid has **4 matching pockets on its bottom face**. Magnets press-fit into all 8 pockets.
+The tray has **2 pockets on its top face** and the lid has **2 matching pockets on its bottom face**. One magnet per pocket — 4 magnets total.
 
 ```
 Tray top face (looking down):
 
   ┌──────────────────────────────────────────────────────┐
-  │  ●        [  jar 1  ]  gap  [  jar 2  ]        ●   │  ← magnets at
-  │  ●                                             ●   │    front & rear
-  │           [      knife slot                   ]    │    of each side
+  │  ●        [  jar 1  ]  gap  [  jar 2  ]        ●   │  ← 1 magnet
+  │           [      knife slot                   ]    │    each side
   └──────────────────────────────────────────────────────┘
 ```
 
