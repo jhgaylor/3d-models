@@ -140,35 +140,41 @@ def build_one(t: Target) -> tuple[Target, bool, str]:
 
 
 def render_models_section(targets: list[Target]) -> str:
-    # Group targets by source .scad file
+    # Group PNG targets by source .scad, then by subfolder of src/
     by_scad: dict[Path, list[Target]] = {}
     for t in targets:
         if t.ext != "png":
             continue
         by_scad.setdefault(t.scad, []).append(t)
 
-    lines: list[str] = ["", "## Models", ""]
+    # Group scad files by their immediate parent folder name (relative to SRC)
+    by_folder: dict[str, list[Path]] = {}
     for scad in sorted(by_scad):
-        name = scad.stem
-        rel_src = scad.relative_to(ROOT).as_posix()
-        previews = sorted(by_scad[scad], key=lambda t: t.preset or "")
-        has_variants = any(t.preset for t in previews)
-        lines.append(f"### `{name}`")
+        folder = scad.parent.relative_to(SRC).as_posix()  # "." or "mac_mini" etc.
+        by_folder.setdefault(folder, []).append(scad)
+
+    lines: list[str] = ["", "## Models", ""]
+    for folder in sorted(by_folder):
+        heading = folder if folder != "." else "misc"
+        lines.append(f"### {heading.replace('_', ' ').title()}")
         lines.append("")
-        lines.append(f"Source: [`{rel_src}`]({rel_src})")
+        lines.append("| | Model | Parts |")
+        lines.append("|---|---|---|")
+        for scad in sorted(by_folder[folder]):
+            name = scad.stem
+            rel_src = scad.relative_to(ROOT).as_posix()
+            previews = sorted(by_scad[scad], key=lambda t: t.preset or "")
+            # Use first preview as the thumbnail
+            thumb_path = previews[0].out.relative_to(ROOT).as_posix()
+            thumb = f'<img src="{thumb_path}" width="120">'
+            # Parts column: dash for single, backtick-joined list for variants
+            has_variants = any(t.preset for t in previews)
+            if has_variants:
+                parts = " · ".join(f"`{t.preset}`" for t in previews)
+            else:
+                parts = "—"
+            lines.append(f"| {thumb} | [`{name}`]({rel_src}) | {parts} |")
         lines.append("")
-        if has_variants:
-            lines.append("| Variant | Preview |")
-            lines.append("| --- | --- |")
-            for t in previews:
-                rel_png = t.out.relative_to(ROOT).as_posix()
-                lines.append(f"| `{t.preset}` | ![{name}.{t.preset}]({rel_png}) |")
-            lines.append("")
-        else:
-            t = previews[0]
-            rel_png = t.out.relative_to(ROOT).as_posix()
-            lines.append(f"![{name}]({rel_png})")
-            lines.append("")
     return "\n".join(lines)
 
 

@@ -5,7 +5,9 @@ OpenSCAD source for 3D-printable models. Every `.scad` file builds to **STL** (f
 ## Layout
 
 ```
-src/                 # OpenSCAD source (.scad) and optional .json customizer sidecars
+src/
+  mac_mini/          # Mac mini rack accessories
+  puffco/            # Puffco accessories
 build/               # Generated STL + 3MF (gitignored)
 previews/            # Generated PNG renders (tracked in git so README renders on GitHub)
 tools/build.py       # Build orchestrator (variants, parallelism, mtime-based rebuild)
@@ -56,61 +58,22 @@ git push origin v0.1.0
 
 ## Models
 
-### `mac_mini`
+### Mac Mini
 
-Source: [`src/mac_mini.scad`](src/mac_mini.scad)
+| | Model | Parts |
+|---|---|---|
+| <img src="previews/mac_mini.png" width="120"> | [`mac_mini`](src/mac_mini/mac_mini.scad) | — |
+| <img src="previews/mac_mini_align_band.front_bar.png" width="120"> | [`mac_mini_align_band`](src/mac_mini/mac_mini_align_band.scad) | `front_bar` · `rear_bar` |
+| <img src="previews/mac_mini_align_grid.divider.png" width="120"> | [`mac_mini_align_grid`](src/mac_mini/mac_mini_align_grid.scad) | `divider` · `long_rail` |
+| <img src="previews/mac_mini_align_rails.png" width="120"> | [`mac_mini_align_rails`](src/mac_mini/mac_mini_align_rails.scad) | — |
+| <img src="previews/mac_mini_cradle.png" width="120"> | [`mac_mini_cradle`](src/mac_mini/mac_mini_cradle.scad) | — |
+| <img src="previews/mac_mini_rear.png" width="120"> | [`mac_mini_rear`](src/mac_mini/mac_mini_rear.scad) | — |
+| <img src="previews/mini_shelf.png" width="120"> | [`mini_shelf`](src/mac_mini/mini_shelf.scad) | — |
 
-![mac_mini](previews/mac_mini.png)
+### Puffco
 
-### `mac_mini_align_band`
-
-Source: [`src/mac_mini_align_band.scad`](src/mac_mini_align_band.scad)
-
-| Variant | Preview |
-| --- | --- |
-| `front_bar` | ![mac_mini_align_band.front_bar](previews/mac_mini_align_band.front_bar.png) |
-| `rear_bar` | ![mac_mini_align_band.rear_bar](previews/mac_mini_align_band.rear_bar.png) |
-
-### `mac_mini_align_grid`
-
-Source: [`src/mac_mini_align_grid.scad`](src/mac_mini_align_grid.scad)
-
-| Variant | Preview |
-| --- | --- |
-| `long_rail` | ![mac_mini_align_grid.long_rail](previews/mac_mini_align_grid.long_rail.png) |
-| `short_rail` | ![mac_mini_align_grid.short_rail](previews/mac_mini_align_grid.short_rail.png) |
-
-### `mac_mini_align_rails`
-
-Source: [`src/mac_mini_align_rails.scad`](src/mac_mini_align_rails.scad)
-
-![mac_mini_align_rails](previews/mac_mini_align_rails.png)
-
-### `mac_mini_cradle`
-
-Source: [`src/mac_mini_cradle.scad`](src/mac_mini_cradle.scad)
-
-![mac_mini_cradle](previews/mac_mini_cradle.png)
-
-### `mac_mini_rear`
-
-Source: [`src/mac_mini_rear.scad`](src/mac_mini_rear.scad)
-
-![mac_mini_rear](previews/mac_mini_rear.png)
-
-### `mini_shelf`
-
-Source: [`src/mini_shelf.scad`](src/mini_shelf.scad)
-
-![mini_shelf](previews/mini_shelf.png)
-
-### `puffco_knife_jar_tray`
-
-Source: [`src/puffco_knife_jar_tray.scad`](src/puffco_knife_jar_tray.scad)
-
-| Variant | Preview |
-| --- | --- |
-| `lid` | ![puffco_knife_jar_tray.lid](previews/puffco_knife_jar_tray.lid.png) |
-| `tray` | ![puffco_knife_jar_tray.tray](previews/puffco_knife_jar_tray.tray.png) |
+| | Model | Parts |
+|---|---|---|
+| <img src="previews/puffco_knife_jar_tray.lid.png" width="120"> | [`puffco_knife_jar_tray`](src/puffco/puffco_knife_jar_tray.scad) | `lid` · `tray` |
 
 <!-- END MODELS -->
