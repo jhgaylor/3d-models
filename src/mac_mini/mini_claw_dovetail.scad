@@ -6,9 +6,9 @@
 // print's tongue as it descends.
 //
 // Variants (see mini_claw_dovetail.json):
-//   hermaphrodite — tongue on +X, socket on -X. Chains in either direction.
-//   male          — tongue only. Use at the chain's -X end.
-//   female        — socket only. Use at the chain's +X end.
+//   pass-through — tongue on +X, socket on -X. Chains in either direction.
+//   plug         — tongue only. Use at the chain's -X end.
+//   socket       — socket only. Use at the chain's +X end.
 //
 // The top face is completely flat (no upward protrusions). Print with
 // the plate top on the bed and the fingers pointing up.
@@ -17,10 +17,10 @@ $fa = 2;
 $fs = 0.5;
 
 // === Variant ===
-mode = "hermaphrodite"; // [hermaphrodite, male, female]
+mode = "pass-through"; // [pass-through, plug, socket]
 
-has_tongue = (mode == "hermaphrodite") || (mode == "male");
-has_socket = (mode == "hermaphrodite") || (mode == "female");
+has_tongue = (mode == "pass-through") || (mode == "plug");
+has_socket = (mode == "pass-through") || (mode == "socket");
 
 // === Mac mini M4 ===
 mini_w = 127;

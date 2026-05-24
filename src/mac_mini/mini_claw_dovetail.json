@@ -1,7 +1,7 @@
 {
     "parameterSets": {
-        "hermaphrodite": { "mode": "hermaphrodite" },
-        "male":          { "mode": "male"          },
-        "female":        { "mode": "female"        }
+        "pass-through": { "mode": "pass-through" },
+        "plug":         { "mode": "plug"         },
+        "socket":       { "mode": "socket"       }
     }
 }
