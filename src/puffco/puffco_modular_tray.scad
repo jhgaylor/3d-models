@@ -100,6 +100,10 @@ rib_spacing = 10;    // distance between vertical ribs
 rib_width   = 1.2;   // groove width
 rib_depth   = 0.6;   // groove depth into wall
 rib_margin  = 8;     // skip the first/last N mm of each face (clears corners)
+hex_d       = 7;     // honeycomb cell diameter (corner-to-corner)
+hex_spacing = 9;     // honeycomb cell-to-cell horizontal spacing
+hex_depth   = 1.5;   // honeycomb recess depth from the bottom face
+hex_margin  = 6;     // skip honeycomb cells within N mm of outer wall
 
 /* ── Helpers ─────────────────────────────────────────── */
 module rpocket(w, l, d, r = 2) {
@@ -176,6 +180,30 @@ module ribs_y_face(y_min, y_max, face_x, dir, h) {
             cube([rib_depth + 0.01, rib_width, h + 0.02]);
 }
 
+// Hexagonal honeycomb recesses cut into the bottom face of a piece's floor.
+// Recesses go from Z = -0.01 up to Z = hex_depth (just into the floor),
+// leaving (flr - hex_depth) of solid material above each cell.
+// (x_off, y_off, w, l) is the piece's footprint in world coordinates.
+module honeycomb_floor(x_off, y_off, w, l) {
+    row_y = hex_spacing * sqrt(3) / 2;
+    nx = ceil(w / hex_spacing) + 1;
+    ny = ceil(l / row_y) + 1;
+    intersection() {
+        union() {
+            for (j = [-1 : ny])
+                for (i = [-1 : nx])
+                    translate([x_off + i * hex_spacing + (j % 2 != 0 ? hex_spacing/2 : 0),
+                               y_off + j * row_y,
+                               -0.01])
+                        rotate([0, 0, 30])
+                            cylinder(d = hex_d, h = hex_depth + 0.01, $fn = 6);
+        }
+        // Clip to the piece's footprint inset by hex_margin
+        translate([x_off + hex_margin, y_off + hex_margin, -0.02])
+            cube([w - 2*hex_margin, l - 2*hex_margin, hex_depth + 0.05]);
+    }
+}
+
 /* ── Knife/jar piece ─────────────────────────────────── */
 module part_knife_jar() {
     difference() {
@@ -201,6 +229,8 @@ module part_knife_jar() {
         // Ribs — left and right faces (outer)
         ribs_y_face(0, ey_a, 0, +1, ez_a);
         ribs_y_face(0, ey_a, ex_front, -1, ez_a);
+        // Honeycomb floor (underside)
+        honeycomb_floor(0, 0, ex_front, ey_a);
     }
 }
 
@@ -232,6 +262,8 @@ module part_dock() {
         // Ribs — left face and back face (outer)
         ribs_y_face(ey_a, ey, 0, +1, ez_dock);
         ribs_x_face(0, ex_dock_piece, ey, -1, ez_dock);
+        // Honeycomb floor (underside)
+        honeycomb_floor(0, ey_a, ex_dock_piece, ey_b);
     }
 }
 
@@ -252,6 +284,8 @@ module part_bucket() {
         ribs_y_face(ey_a, ey, ex, -1, ez_dock);
         ribs_x_face(seam_x, ex, ey_a, +1, ez_dock);
         ribs_x_face(seam_x, ex, ey,   -1, ez_dock);
+        // Honeycomb floor (underside)
+        honeycomb_floor(seam_x, ey_a, ex_bucket_piece, ey_b);
     }
 }
 
