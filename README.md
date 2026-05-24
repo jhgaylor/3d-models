@@ -63,7 +63,6 @@ git push origin v0.1.0
 | | Model | Parts |
 |---|---|---|
 | <img src="previews/mini_claw_dovetail.png" width="120"> | [`mini_claw_dovetail`](src/mac_mini/mini_claw_dovetail.scad) | — |
-| <img src="previews/mini_claw_hook.png" width="120"> | [`mini_claw_hook`](src/mac_mini/mini_claw_hook.scad) | — |
 
 ### Puffco
 
