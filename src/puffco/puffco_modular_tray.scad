@@ -72,18 +72,6 @@ ey   = ey_a + ey_b;                       // 195 — assembled total depth
 
 pocket_cy = ey_a + ey_b/2;                // 130 — both dock + bucket pockets share Y
 
-/* ── Lid dimensions ──────────────────────────────────── */
-peak_h        = 175;                    // Peak Pro height
-peak_clr      = 5;                      // headroom above the Peak Pro
-saddle_top_z  = flr + saddle_h;         //  37 — Z of saddle dip (where Peak base sits)
-lid_inner_h   = saddle_top_z + peak_h + peak_clr;  // 217 — interior cavity height
-lid_xy_clr    = 0.5;                    // clearance around dock-piece footprint per side
-lid_w_int     = seam_x   + 2*lid_xy_clr;  // 123 — interior X
-lid_l_int     = ey_b     + 2*lid_xy_clr;  // 131 — interior Y
-lid_w_ext     = lid_w_int + 2*wall;       // 129 — exterior X
-lid_l_ext     = lid_l_int + 2*wall;       // 137 — exterior Y
-lid_h         = lid_inner_h + wall;       // 220 — total exterior height
-
 /* ── Knife/jar slot positions ────────────────────────── */
 jarsW = 2*jw + jar_gap;
 jMarX = (ix - jarsW) / 2;
@@ -105,6 +93,24 @@ dt_kj_zh  = ez_a;           // 9 mm — matches knife/jar height
 // Dock ↔ bucket: tongue on dock's +X face
 dt_db_cy  = 181;            // Y centre — near rear, clear of bucket pocket at the tongue tip
 dt_db_zh  = ez_dock - 3;    // 30 mm — leaves a 3 mm cap above the bucket-side socket
+
+/* ── Lid dimensions ──────────────────────────────────── */
+peak_h        = 175;                    // Peak Pro height
+peak_clr      = 5;                      // headroom above the Peak Pro
+saddle_top_z  = flr + saddle_h;         //  37 — Z of saddle dip (where Peak base sits)
+lid_inner_h   = saddle_top_z + peak_h + peak_clr;  // 217 — interior cavity height
+lid_xy_clr    = 0.5;                    // clearance around dock-piece footprint per side
+lid_w_main    = seam_x + 2*lid_xy_clr;    // 123 — main interior X (around dock body)
+lid_l_int     = ey_b   + 2*lid_xy_clr;    // 131 — interior Y
+// Tongue notch — accommodates the dock piece's +X tongue AND serves as the
+// alignment key. 180° rotation puts the notch on the wrong side, so the
+// dock's tongue would hit the solid left interior wall.
+lid_notch_w   = dt_length + lid_xy_clr;   //  12.5 — notch depth into +X wall
+lid_notch_l   = dt_wide + 2*lid_xy_clr;   //  23   — notch Y span (matches tongue tip)
+lid_notch_cy  = (dt_db_cy - ey_a) + wall + lid_xy_clr;  // notch centre Y in lid frame
+lid_w_ext     = wall + lid_w_main + lid_notch_w + wall; // 141.5 — exterior X
+lid_l_ext     = lid_l_int + 2*wall;        // 137 — exterior Y
+lid_h         = lid_inner_h + wall;        // 220 — total exterior height
 
 /* ── Style ───────────────────────────────────────────── */
 chamfer     = 1.5;   // top-edge chamfer (taper) on outer body
@@ -304,11 +310,14 @@ module part_bucket() {
 /* ── Lid piece ───────────────────────────────────────── */
 module part_lid() {
     difference() {
-        // Outer shell
+        // Outer shell — rectangular box wide enough to contain dock body + tongue
         chamfered_rbox(lid_w_ext, lid_l_ext, lid_h, r = 3);
-        // Hollow interior — open at Z=0 (bottom) up to lid_inner_h (closed by 3 mm top)
+        // Main interior cavity — sized to dock body (123 × 131)
         translate([wall, wall, -0.01])
-            rbox(lid_w_int, lid_l_int, lid_inner_h + 0.01, r = 2);
+            rbox(lid_w_main, lid_l_int, lid_inner_h + 0.01, r = 2);
+        // Tongue notch — extends the cavity on the right at the tongue Y range
+        translate([wall + lid_w_main, lid_notch_cy - lid_notch_l/2, -0.01])
+            cube([lid_notch_w + 0.01, lid_notch_l, lid_inner_h + 0.01]);
         // Cable cutout — back wall, aligned with the dock's cable port
         translate([wall + lid_xy_clr + dock_cx - cable_w/2,
                    lid_l_ext - wall - 1,
