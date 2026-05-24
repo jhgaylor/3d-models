@@ -1,0 +1,7 @@
+{
+    "parameterSets": {
+        "knife_jar": { "part": "knife_jar" },
+        "dock":      { "part": "dock"      },
+        "bucket":    { "part": "bucket"    }
+    }
+}
