@@ -1,6 +1,0 @@
-{
-    "parameterSets": {
-        "front_bar": { "part": "front_bar" },
-        "rear_bar":  { "part": "rear_bar"  }
-    }
-}

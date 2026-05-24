@@ -62,13 +62,8 @@ git push origin v0.1.0
 
 | | Model | Parts |
 |---|---|---|
-| <img src="previews/mac_mini.png" width="120"> | [`mac_mini`](src/mac_mini/mac_mini.scad) | — |
-| <img src="previews/mac_mini_align_band.front_bar.png" width="120"> | [`mac_mini_align_band`](src/mac_mini/mac_mini_align_band.scad) | `front_bar` · `rear_bar` |
-| <img src="previews/mac_mini_align_grid.divider.png" width="120"> | [`mac_mini_align_grid`](src/mac_mini/mac_mini_align_grid.scad) | `divider` · `long_rail` |
-| <img src="previews/mac_mini_align_rails.png" width="120"> | [`mac_mini_align_rails`](src/mac_mini/mac_mini_align_rails.scad) | — |
-| <img src="previews/mac_mini_cradle.png" width="120"> | [`mac_mini_cradle`](src/mac_mini/mac_mini_cradle.scad) | — |
-| <img src="previews/mac_mini_rear.png" width="120"> | [`mac_mini_rear`](src/mac_mini/mac_mini_rear.scad) | — |
-| <img src="previews/mini_shelf.png" width="120"> | [`mini_shelf`](src/mac_mini/mini_shelf.scad) | — |
+| <img src="previews/mini_claw_dovetail.png" width="120"> | [`mini_claw_dovetail`](src/mac_mini/mini_claw_dovetail.scad) | — |
+| <img src="previews/mini_claw_hook.png" width="120"> | [`mini_claw_hook`](src/mac_mini/mini_claw_hook.scad) | — |
 
 ### Puffco
 
