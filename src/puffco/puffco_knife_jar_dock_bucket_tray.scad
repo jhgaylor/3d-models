@@ -134,9 +134,13 @@ module tray() {
         translate([bucket_cx, pocket_cy, flr])
             cylinder(d = bucket_d, h = ez_dock - flr + 1);
 
-        // Cable cutout — through the rear wall, centred on dock
-        translate([dock_cx - cable_w/2, ey - wall - 1, flr])
-            cube([cable_w, wall + 2, cable_h]);
+        // Cable cutout — from the back of the dock pocket through the
+        // rear wall (clears the 4 mm slab between them set by the
+        // larger bucket pocket pacing ey_b).
+        cable_y0 = pocket_cy + dock_d / 2 - 1;     // 1 mm inside pocket
+        cable_y1 = ey + 1;                          // 1 mm past exterior
+        translate([dock_cx - cable_w/2, cable_y0, flr])
+            cube([cable_w, cable_y1 - cable_y0, cable_h]);
     }
 }
 
