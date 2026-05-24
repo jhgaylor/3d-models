@@ -27,7 +27,7 @@
 $fn = 96;
 
 /* ── Part selector (overridden by parameterSets) ─────── */
-part = "knife_jar";   // [knife_jar, dock, bucket]
+part = "knife_jar";   // [knife_jar, dock, bucket, lid]
 
 /* ── Common structure ────────────────────────────────── */
 tol  = 1.0;
@@ -71,6 +71,18 @@ ey_b = wall + bucket_d + wall;            // 130 — dock/bucket piece depth
 ey   = ey_a + ey_b;                       // 195 — assembled total depth
 
 pocket_cy = ey_a + ey_b/2;                // 130 — both dock + bucket pockets share Y
+
+/* ── Lid dimensions ──────────────────────────────────── */
+peak_h        = 175;                    // Peak Pro height
+peak_clr      = 5;                      // headroom above the Peak Pro
+saddle_top_z  = flr + saddle_h;         //  37 — Z of saddle dip (where Peak base sits)
+lid_inner_h   = saddle_top_z + peak_h + peak_clr;  // 217 — interior cavity height
+lid_xy_clr    = 0.5;                    // clearance around dock-piece footprint per side
+lid_w_int     = seam_x   + 2*lid_xy_clr;  // 123 — interior X
+lid_l_int     = ey_b     + 2*lid_xy_clr;  // 131 — interior Y
+lid_w_ext     = lid_w_int + 2*wall;       // 129 — exterior X
+lid_l_ext     = lid_l_int + 2*wall;       // 137 — exterior Y
+lid_h         = lid_inner_h + wall;       // 220 — total exterior height
 
 /* ── Knife/jar slot positions ────────────────────────── */
 jarsW = 2*jw + jar_gap;
@@ -289,10 +301,32 @@ module part_bucket() {
     }
 }
 
+/* ── Lid piece ───────────────────────────────────────── */
+module part_lid() {
+    difference() {
+        // Outer shell
+        chamfered_rbox(lid_w_ext, lid_l_ext, lid_h, r = 3);
+        // Hollow interior — open at Z=0 (bottom) up to lid_inner_h (closed by 3 mm top)
+        translate([wall, wall, -0.01])
+            rbox(lid_w_int, lid_l_int, lid_inner_h + 0.01, r = 2);
+        // Cable cutout — back wall, aligned with the dock's cable port
+        translate([wall + lid_xy_clr + dock_cx - cable_w/2,
+                   lid_l_ext - wall - 1,
+                   flr])
+            cube([cable_w, wall + 2, cable_h]);
+        // Ribs on all four outer faces
+        ribs_x_face(0, lid_w_ext, 0,         +1, lid_h);
+        ribs_x_face(0, lid_w_ext, lid_l_ext, -1, lid_h);
+        ribs_y_face(0, lid_l_ext, 0,         +1, lid_h);
+        ribs_y_face(0, lid_l_ext, lid_w_ext, -1, lid_h);
+    }
+}
+
 /* ── Render ──────────────────────────────────────────── */
 if (part == "knife_jar") part_knife_jar();
 if (part == "dock")      part_dock();
 if (part == "bucket")    part_bucket();
+if (part == "lid")       part_lid();
 
 /* ── Summary ─────────────────────────────────────────── */
 echo(str("Part            : ", part));

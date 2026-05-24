@@ -71,6 +71,6 @@ git push origin v0.1.0
 | <img src="previews/puffco_knife_jar_dock_bucket_tray.png" width="120"> | [`puffco_knife_jar_dock_bucket_tray`](src/puffco/puffco_knife_jar_dock_bucket_tray.scad) | — |
 | <img src="previews/puffco_knife_jar_dock_tray.png" width="120"> | [`puffco_knife_jar_dock_tray`](src/puffco/puffco_knife_jar_dock_tray.scad) | — |
 | <img src="previews/puffco_knife_jar_tray.lid.png" width="120"> | [`puffco_knife_jar_tray`](src/puffco/puffco_knife_jar_tray.scad) | `lid` · `tray` |
-| <img src="previews/puffco_modular_tray.bucket.png" width="120"> | [`puffco_modular_tray`](src/puffco/puffco_modular_tray.scad) | `bucket` · `dock` · `knife_jar` |
+| <img src="previews/puffco_modular_tray.bucket.png" width="120"> | [`puffco_modular_tray`](src/puffco/puffco_modular_tray.scad) | `bucket` · `dock` · `knife_jar` · `lid` |
 
 <!-- END MODELS -->
