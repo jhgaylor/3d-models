@@ -1,9 +1,11 @@
 // "Plus"-shaped claw that drops onto a Mac mini M4 (127x127x50mm).
 // The plug and socket variants have four fingers wrapping ~15mm down
-// each side of the Mac. The pass-through variant skips the fingers and
-// pulls its dovetails inward — it latches on top of the Mac and relies
-// on its plug/socket neighbours to constrain the cross-stack axis.
-// This shrinks the gap between Macs from ~19mm to ~4mm per joint.
+// each side of the Mac. The pass-through variant drops the two fingers
+// on the dovetail (X) axis and pulls those dovetails inward — its
+// plug/socket neighbours constrain that axis through the dovetails.
+// It keeps the front/back (Y) fingers, since nothing else holds the
+// cross-stack axis. This shrinks the gap between Macs along the chain
+// from ~19mm to ~4mm per joint.
 //
 // Variants (see mini_claw_dovetail.json):
 //   pass-through — tongue on +X, socket on -X. No fingers. Must sit
@@ -23,9 +25,11 @@ $fs = 0.5;
 // === Variant ===
 mode = "pass-through"; // [pass-through, plug, socket]
 
-has_tongue  = (mode == "pass-through") || (mode == "plug");
-has_socket  = (mode == "pass-through") || (mode == "socket");
-has_fingers = (mode != "pass-through");
+has_tongue    = (mode == "pass-through") || (mode == "plug");
+has_socket    = (mode == "pass-through") || (mode == "socket");
+// X-axis (dovetail-axis) fingers only on plug/socket; the front/back
+// (Y-axis) fingers are present on every variant.
+has_x_fingers = (mode != "pass-through");
 
 // === Mac mini M4 ===
 mini_w = 127;
@@ -42,13 +46,16 @@ outer_span   = inner_span + 2 * finger_thickness;
 finger_inner = inner_span / 2;
 finger_outer = outer_span / 2;
 
-// Where the dovetail attaches to the plate (and how far the plus arm
-// extends). Plug/socket use the finger position; pass-through pulls
-// in so the neighbour's finger still clears this Mac by side_clearance.
+// X arm carries the dovetails. Plug/socket extend to the finger position;
+// pass-through pulls in so the neighbour's finger still clears this Mac by
+// side_clearance.
 //   neighbour_finger_outer (in world) = -pt_arm_half - dovetail_length + finger_thickness
 //   set ≤ -mini_w/2 - side_clearance  →  pt_arm_half ≥ 52
 pt_arm_half = 52;
-arm_half    = has_fingers ? finger_outer : pt_arm_half;
+arm_half_x  = has_x_fingers ? finger_outer : pt_arm_half;
+// Y arm always reaches the finger position: the front/back fingers grip the
+// cross-stack axis on every variant (the dovetail chain only holds the X axis).
+arm_half_y  = finger_outer;
 
 // === Dovetail ===
 dovetail_length = 12;
@@ -62,11 +69,11 @@ fit_gap         = 0.3;
 module claw_outline_2d() {
     difference() {
         union() {
-            square([2*arm_half, arm_width], center = true);
-            square([arm_width, 2*arm_half], center = true);
+            square([2*arm_half_x, arm_width], center = true);
+            square([arm_width, 2*arm_half_y], center = true);
             if (has_tongue)
                 // narrow at the attached base, widens out to the tip
-                translate([arm_half, 0])
+                translate([arm_half_x, 0])
                     polygon([
                         [0,               -dovetail_narrow/2],
                         [0,                dovetail_narrow/2],
@@ -75,14 +82,14 @@ module claw_outline_2d() {
                     ]);
             if (has_socket)
                 // arm-width slab extending past the -X arm; cavity cut below
-                translate([-arm_half - dovetail_length, -arm_width/2])
+                translate([-arm_half_x - dovetail_length, -arm_width/2])
                     square([dovetail_length, arm_width]);
         }
         if (has_socket)
             // Cavity mirrors the tongue trapezoid + fit_gap. Wide edge faces
             // the gap to capture the neighbor's wide tongue tip; narrows
             // toward the outer end of the extension.
-            translate([-arm_half, 0])
+            translate([-arm_half_x, 0])
                 polygon([
                     [0,                -(dovetail_wide   + fit_gap)/2],
                     [0,                 (dovetail_wide   + fit_gap)/2],
@@ -100,10 +107,13 @@ module finger(cx, cy, sx, sy) {
 union() {
     linear_extrude(plate_thickness)
         claw_outline_2d();
-    if (has_fingers) {
+    // Front/back (Y-axis) fingers — grip the cross-stack axis on every variant.
+    finger(-arm_width/2,    finger_inner,  arm_width,        finger_thickness);
+    finger(-arm_width/2,   -finger_outer,  arm_width,        finger_thickness);
+    // Left/right (X-axis) fingers — plug/socket only; pass-through relies on
+    // its neighbours' dovetails to hold this axis.
+    if (has_x_fingers) {
         finger( finger_inner,  -arm_width/2,   finger_thickness, arm_width);
         finger(-finger_outer,  -arm_width/2,   finger_thickness, arm_width);
-        finger(-arm_width/2,    finger_inner,  arm_width,        finger_thickness);
-        finger(-arm_width/2,   -finger_outer,  arm_width,        finger_thickness);
     }
 }
