@@ -37,6 +37,8 @@ h2 { margin: 2.5rem 0 1rem; font-size: 1.25rem; }
             display: block; }
 .body { padding: 14px; display: flex; flex-direction: column; gap: 8px; flex: 1; }
 .name { margin: 0; font: 600 15px/1.2 ui-monospace, monospace; word-break: break-all; }
+.variant { font: 500 11px/1 ui-monospace, monospace; color: #fff; background: #4a7a5a;
+           padding: 2px 7px; border-radius: 4px; white-space: nowrap; }
 .meta { color: #666; font-size: 13px; }
 .meta a { color: inherit; }
 .dl { display: flex; flex-wrap: wrap; gap: 6px; align-items: center; }
@@ -110,38 +112,36 @@ def render(repo: str) -> str:
         out.append('<div class="grid">')
         for stem in sorted(by_category[category]):
             ts = by_category[category][stem]
+            pngs = {t.preset: t for t in ts if t.ext == "png"}
             presets = sorted({t.preset for t in ts if t.preset is not None})
-            pngs = [t for t in ts if t.ext == "png"]
-            preview = pngs[0] if pngs else None
 
             src_rel = ts[0].scad.relative_to(ROOT).as_posix()
             src_url = f"{src_base}/{src_rel}"
 
-            out.append('<div class="card">')
-            if preview:
-                preview_rel = preview.out.relative_to(ROOT).as_posix()
-                out.append(
-                    f'<img src="{html.escape(preview_rel)}" alt="{html.escape(stem)} preview" loading="lazy">'
-                )
-            out.append('<div class="body">')
-            out.append(f'<h3 class="name">{html.escape(stem)}</h3>')
-            out.append(f'<div class="meta"><a href="{html.escape(src_url)}">view source</a></div>')
+            # One card per variant so every preset shows its own preview.
+            for preset in (presets or [None]):
+                preview = pngs.get(preset)
+                base = f"{stem}.{preset}" if preset else stem
+                alt = f"{stem} {preset}" if preset else stem
 
-            if presets:
-                for preset in presets:
-                    base = f"{stem}.{preset}"
-                    out.append('<div class="dl">')
-                    out.append(f'<span class="label">{html.escape(preset)}</span>')
-                    out.append(f'<a href="{release_base}/{base}.stl" download>stl</a>')
-                    out.append(f'<a href="{release_base}/{base}.3mf" download>3mf</a>')
-                    out.append("</div>")
-            else:
+                out.append('<div class="card">')
+                if preview:
+                    preview_rel = preview.out.relative_to(ROOT).as_posix()
+                    out.append(
+                        f'<img src="{html.escape(preview_rel)}" alt="{html.escape(alt)} preview" loading="lazy">'
+                    )
+                out.append('<div class="body">')
+                name_html = html.escape(stem)
+                if preset:
+                    name_html += f' <span class="variant">{html.escape(preset)}</span>'
+                out.append(f'<h3 class="name">{name_html}</h3>')
+                out.append(f'<div class="meta"><a href="{html.escape(src_url)}">view source</a></div>')
                 out.append('<div class="dl">')
                 out.append('<span class="label">download</span>')
-                out.append(f'<a href="{release_base}/{stem}.stl" download>stl</a>')
-                out.append(f'<a href="{release_base}/{stem}.3mf" download>3mf</a>')
+                out.append(f'<a href="{release_base}/{base}.stl" download>stl</a>')
+                out.append(f'<a href="{release_base}/{base}.3mf" download>3mf</a>')
                 out.append("</div>")
-            out.append("</div></div>")
+                out.append("</div></div>")
         out.append("</div>")
 
     out.append(
