@@ -188,7 +188,7 @@ def hero_intro(repo: str) -> str:
         '<a class="btn primary" href="https://jakegaylor.com">jakegaylor.com</a>'
         '<a class="btn" href="mailto:jhgaylor@gmail.com">Email me</a>'
         '<a class="btn" href="sms:+17204533994">Text me</a>'
-        '<a class="btn" href="https://jakegaylor.com/resume/">Résumé</a>'
+        '<a class="btn" href="https://jakegaylor.com/resume/">Resume</a>'
         f'<a class="btn" href="https://github.com/{html.escape(repo)}">GitHub</a>'
         '</div></div>'
     )
