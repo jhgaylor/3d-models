@@ -17,7 +17,7 @@ import sys
 from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
-from build import ROOT, PREVIEW, plan_targets  # noqa: E402
+from build import ROOT, PREVIEW, plan_targets, is_scene  # noqa: E402
 
 SITE = ROOT / "site"
 
@@ -28,7 +28,9 @@ body { font: 15px/1.5 system-ui, -apple-system, sans-serif; max-width: var(--max
        margin: 2rem auto; padding: 0 1rem; }
 h1 { margin: 0 0 .25rem; }
 h2 { margin: 2.5rem 0 1rem; font-size: 1.25rem; }
-.lede { color: #666; margin: 0 0 2rem; }
+.lede { color: #666; margin: 0 0 1.5rem; }
+.hero { width: 100%; aspect-ratio: 4/3; object-fit: contain; background: #f5f5f5;
+        border: 1px solid #0002; border-radius: 10px; margin: 0 0 2.5rem; display: block; }
 .grid { display: grid; gap: var(--gap);
         grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); }
 .card { border: 1px solid #0002; border-radius: 8px; overflow: hidden;
@@ -82,9 +84,17 @@ def detect_repo() -> str:
 def render(repo: str) -> str:
     targets = plan_targets()
 
+    # Scene renders (assembly/hero shots) — shown as a banner, not as cards.
+    scenes = sorted(
+        (t for t in targets if t.ext == "png" and is_scene(t.scad)),
+        key=lambda t: t.out.name,
+    )
+
     # Group by category (subfolder under src/), then by source stem.
     by_category: dict[str, dict[str, list]] = {}
     for t in targets:
+        if is_scene(t.scad):
+            continue
         rel = t.scad.relative_to(ROOT / "src")
         category = rel.parts[0] if len(rel.parts) > 1 else "other"
         by_category.setdefault(category, {}).setdefault(t.scad.stem, []).append(t)
@@ -105,6 +115,13 @@ def render(repo: str) -> str:
         f'<a href="https://github.com/{html.escape(repo)}">{html.escape(repo)}</a>. '
         f"Downloads link to the latest tagged release.</p>"
     )
+
+    for scene in scenes:
+        scene_rel = scene.out.relative_to(ROOT).as_posix()
+        out.append(
+            f'<img class="hero" src="{html.escape(scene_rel)}" '
+            f'alt="assembly preview" loading="lazy">'
+        )
 
     for category in sorted(by_category):
         label = category.replace("_", " ").title()

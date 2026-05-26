@@ -62,6 +62,11 @@ class Target:
         return f"{name}.{self.ext}"
 
 
+def is_scene(scad: Path) -> bool:
+    # Scenes are assembly/hero renders, not printable parts: PNG only.
+    return scad.stem.endswith("_scene")
+
+
 def variants_for(scad: Path) -> list[tuple[str | None, Path | None]]:
     sidecar = scad.with_suffix(".json")
     if not sidecar.exists():
@@ -76,9 +81,11 @@ def variants_for(scad: Path) -> list[tuple[str | None, Path | None]]:
 def plan_targets() -> list[Target]:
     targets: list[Target] = []
     for scad in sorted(SRC.rglob("*.scad")):
+        exts = (("png", PREVIEW),) if is_scene(scad) else \
+               (("stl", BUILD), ("3mf", BUILD), ("png", PREVIEW))
         for preset, sidecar in variants_for(scad):
             name = scad.stem + (f".{preset}" if preset else "")
-            for ext, out_dir in (("stl", BUILD), ("3mf", BUILD), ("png", PREVIEW)):
+            for ext, out_dir in exts:
                 targets.append(Target(
                     scad=scad,
                     preset=preset,
@@ -143,7 +150,7 @@ def render_models_section(targets: list[Target]) -> str:
     # Group PNG targets by source .scad, then by subfolder of src/
     by_scad: dict[Path, list[Target]] = {}
     for t in targets:
-        if t.ext != "png":
+        if t.ext != "png" or is_scene(t.scad):
             continue
         by_scad.setdefault(t.scad, []).append(t)
 
