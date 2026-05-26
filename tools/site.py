@@ -1,8 +1,12 @@
 #!/usr/bin/env python3
-"""Generate a static GitHub Pages site listing every model.
+"""Generate a static GitHub Pages site.
 
 Reads the same target plan as build.py so the site stays in lockstep with
-src/. Writes site/index.html plus a copy of previews/ for the page to load.
+src/. Writes:
+  site/index.html        — hero banner + a grid of project cards (one per model)
+  site/<stem>.html       — per-project detail page (variants + downloads)
+  site/previews/*.png    — copied previews the pages load
+
 Download links point to assets on the latest GitHub Release.
 """
 
@@ -26,29 +30,34 @@ CSS = """\
 * { box-sizing: border-box; }
 body { font: 15px/1.5 system-ui, -apple-system, sans-serif; max-width: var(--max);
        margin: 2rem auto; padding: 0 1rem; }
+a { color: inherit; }
 h1 { margin: 0 0 .25rem; }
 h2 { margin: 2.5rem 0 1rem; font-size: 1.25rem; }
 .lede { color: #666; margin: 0 0 1.5rem; }
+.back { display: inline-block; margin: 0 0 1.5rem; color: #666; font-size: 14px;
+        text-decoration: none; }
+.back:hover { color: inherit; }
 .hero { width: 100%; aspect-ratio: 4/3; object-fit: contain; background: #f5f5f5;
         border: 1px solid #0002; border-radius: 10px; margin: 0 0 .5rem; display: block; }
 .credit { color: #888; font-size: 12px; margin: 0 0 2.5rem; }
-.credit a { color: inherit; }
 .grid { display: grid; gap: var(--gap);
         grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); }
 .card { border: 1px solid #0002; border-radius: 8px; overflow: hidden;
         display: flex; flex-direction: column; background: #fff; }
 .card img { width: 100%; aspect-ratio: 4/3; object-fit: contain; background: #f5f5f5;
             display: block; }
+a.card { text-decoration: none; transition: transform .08s ease, box-shadow .08s ease; }
+a.card:hover { transform: translateY(-2px); box-shadow: 0 6px 20px #0002; }
 .body { padding: 14px; display: flex; flex-direction: column; gap: 8px; flex: 1; }
 .name { margin: 0; font: 600 15px/1.2 ui-monospace, monospace; word-break: break-all; }
 .variant { font: 500 11px/1 ui-monospace, monospace; color: #fff; background: #4a7a5a;
            padding: 2px 7px; border-radius: 4px; white-space: nowrap; }
 .meta { color: #666; font-size: 13px; }
-.meta a { color: inherit; }
+.tag { font-size: 12px; color: #777; }
 .dl { display: flex; flex-wrap: wrap; gap: 6px; align-items: center; }
 .dl .label { font-size: 12px; color: #666; min-width: 70px; }
 .dl a { font-size: 12px; padding: 3px 9px; border-radius: 4px; background: #eee;
-        text-decoration: none; color: inherit; }
+        text-decoration: none; }
 .dl a:hover { background: #ddd; }
 .footer { margin: 3rem 0 1rem; color: #666; font-size: 13px; }
 .footer code { background: #0001; padding: 1px 5px; border-radius: 3px; }
@@ -56,7 +65,7 @@ h2 { margin: 2.5rem 0 1rem; font-size: 1.25rem; }
   body { background: #111; color: #eee; }
   .card { background: #1a1a1a; border-color: #fff2; }
   .card img { background: #222; }
-  .meta, .footer { color: #aaa; }
+  .meta, .footer, .tag { color: #aaa; }
   .dl .label { color: #aaa; }
   .dl a { background: #2a2a2a; }
   .dl a:hover { background: #3a3a3a; }
@@ -83,98 +92,143 @@ def detect_repo() -> str:
     return "owner/repo"
 
 
-def render(repo: str) -> str:
-    targets = plan_targets()
-
-    # Scene renders (assembly/hero shots) — shown as a banner, not as cards.
-    scenes = sorted(
-        (t for t in targets if t.ext == "png" and is_scene(t.scad)),
-        key=lambda t: t.out.name,
-    )
-
-    # Group by category (subfolder under src/), then by source stem.
-    by_category: dict[str, dict[str, list]] = {}
+def collect_projects(targets: list) -> list[dict]:
+    """One project per source .scad (scenes excluded), with its variants."""
+    grouped: dict[tuple, list] = {}
     for t in targets:
         if is_scene(t.scad):
             continue
         rel = t.scad.relative_to(ROOT / "src")
         category = rel.parts[0] if len(rel.parts) > 1 else "other"
-        by_category.setdefault(category, {}).setdefault(t.scad.stem, []).append(t)
+        grouped.setdefault((category, t.scad.stem, t.scad), []).append(t)
 
-    release_base = f"https://github.com/{repo}/releases/latest/download"
-    src_base = f"https://github.com/{repo}/blob/main"
+    projects: list[dict] = []
+    for (category, stem, scad), ts in grouped.items():
+        pngs = {t.preset: t for t in ts if t.ext == "png"}
+        presets = sorted(p for p in pngs if p is not None)
+        variants = ([(p, pngs[p]) for p in presets]
+                    if presets else [(None, pngs.get(None))])
+        projects.append({
+            "stem": stem,
+            "category": category,
+            "src_rel": scad.relative_to(ROOT).as_posix(),
+            "variants": variants,
+            "thumb": variants[0][1],
+            "page": f"{stem}.html",
+        })
+    return sorted(projects, key=lambda p: (p["category"], p["stem"]))
+
+
+def page(title: str, body: list[str]) -> str:
+    out = [
+        "<!doctype html>",
+        '<html lang="en"><head><meta charset="utf-8">',
+        '<meta name="viewport" content="width=device-width, initial-scale=1">',
+        f"<title>{html.escape(title)}</title>",
+        f"<style>{CSS}</style></head><body>",
+    ]
+    out += body
+    out.append("</body></html>")
+    return "\n".join(out)
+
+
+def footer(repo: str) -> str:
+    return (
+        f'<p class="footer">Generated from <code>src/</code>. '
+        f'Releases: <a href="https://github.com/{html.escape(repo)}/releases">all releases</a> · '
+        f'<a href="https://github.com/{html.escape(repo)}/releases/latest">latest</a>.</p>'
+    )
+
+
+def render_index(repo: str, projects: list[dict], scenes: list) -> str:
     repo_name = repo.split("/")[-1]
-
-    out: list[str] = []
-    out.append("<!doctype html>")
-    out.append('<html lang="en"><head><meta charset="utf-8">')
-    out.append('<meta name="viewport" content="width=device-width, initial-scale=1">')
-    out.append(f"<title>{html.escape(repo_name)} — models</title>")
-    out.append(f"<style>{CSS}</style></head><body>")
-    out.append(f"<h1>{html.escape(repo_name)}</h1>")
-    out.append(
+    body: list[str] = []
+    body.append(f"<h1>{html.escape(repo_name)}</h1>")
+    body.append(
         f'<p class="lede">3D-printable models, generated from '
         f'<a href="https://github.com/{html.escape(repo)}">{html.escape(repo)}</a>. '
-        f"Downloads link to the latest tagged release.</p>"
+        f"Pick a project to see its parts and downloads.</p>"
     )
 
     for scene in scenes:
         scene_rel = scene.out.relative_to(ROOT).as_posix()
-        out.append(
+        body.append(
             f'<img class="hero" src="{html.escape(scene_rel)}" '
             f'alt="assembly preview" loading="lazy">'
         )
-        out.append(
+        body.append(
             '<p class="credit">Mac mini model by '
             '<a href="https://www.printables.com/model/1057608-mac-mini-m4">Satyr</a>, '
             '<a href="https://creativecommons.org/licenses/by/4.0/">CC BY 4.0</a>.</p>'
         )
 
+    by_category: dict[str, list[dict]] = {}
+    for p in projects:
+        by_category.setdefault(p["category"], []).append(p)
+
     for category in sorted(by_category):
         label = category.replace("_", " ").title()
-        out.append(f"<h2>{html.escape(label)}</h2>")
-        out.append('<div class="grid">')
-        for stem in sorted(by_category[category]):
-            ts = by_category[category][stem]
-            pngs = {t.preset: t for t in ts if t.ext == "png"}
-            presets = sorted({t.preset for t in ts if t.preset is not None})
+        body.append(f"<h2>{html.escape(label)}</h2>")
+        body.append('<div class="grid">')
+        for p in by_category[category]:
+            thumb = p["thumb"]
+            n = len(p["variants"])
+            tag = f"{n} parts" if n > 1 and p["variants"][0][0] else "single part"
+            body.append(f'<a class="card" href="{html.escape(p["page"])}">')
+            if thumb:
+                thumb_rel = thumb.out.relative_to(ROOT).as_posix()
+                body.append(
+                    f'<img src="{html.escape(thumb_rel)}" '
+                    f'alt="{html.escape(p["stem"])}" loading="lazy">'
+                )
+            body.append('<div class="body">')
+            body.append(f'<h3 class="name">{html.escape(p["stem"])}</h3>')
+            body.append(f'<div class="tag">{html.escape(tag)}</div>')
+            body.append("</div></a>")
+        body.append("</div>")
 
-            src_rel = ts[0].scad.relative_to(ROOT).as_posix()
-            src_url = f"{src_base}/{src_rel}"
+    body.append(footer(repo))
+    return page(f"{repo_name} — projects", body)
 
-            # One card per variant so every preset shows its own preview.
-            for preset in (presets or [None]):
-                preview = pngs.get(preset)
-                base = f"{stem}.{preset}" if preset else stem
-                alt = f"{stem} {preset}" if preset else stem
 
-                out.append('<div class="card">')
-                if preview:
-                    preview_rel = preview.out.relative_to(ROOT).as_posix()
-                    out.append(
-                        f'<img src="{html.escape(preview_rel)}" alt="{html.escape(alt)} preview" loading="lazy">'
-                    )
-                out.append('<div class="body">')
-                name_html = html.escape(stem)
-                if preset:
-                    name_html += f' <span class="variant">{html.escape(preset)}</span>'
-                out.append(f'<h3 class="name">{name_html}</h3>')
-                out.append(f'<div class="meta"><a href="{html.escape(src_url)}">view source</a></div>')
-                out.append('<div class="dl">')
-                out.append('<span class="label">download</span>')
-                out.append(f'<a href="{release_base}/{base}.stl" download>stl</a>')
-                out.append(f'<a href="{release_base}/{base}.3mf" download>3mf</a>')
-                out.append("</div>")
-                out.append("</div></div>")
-        out.append("</div>")
+def render_detail(repo: str, project: dict) -> str:
+    repo_name = repo.split("/")[-1]
+    release_base = f"https://github.com/{repo}/releases/latest/download"
+    src_url = f"https://github.com/{repo}/blob/main/{project['src_rel']}"
+    stem = project["stem"]
 
-    out.append(
-        f'<p class="footer">Generated from <code>src/</code>. '
-        f'Releases: <a href="https://github.com/{html.escape(repo)}/releases">all releases</a> · '
-        f'<a href="https://github.com/{html.escape(repo)}/releases/latest">latest</a>.</p>'
+    body: list[str] = []
+    body.append('<a class="back" href="index.html">&larr; all projects</a>')
+    body.append(f"<h1>{html.escape(stem)}</h1>")
+    body.append(
+        f'<p class="meta">{html.escape(project["category"].replace("_", " "))} · '
+        f'<a href="{html.escape(src_url)}">view source</a></p>'
     )
-    out.append("</body></html>")
-    return "\n".join(out)
+
+    body.append('<div class="grid">')
+    for preset, preview in project["variants"]:
+        base = f"{stem}.{preset}" if preset else stem
+        alt = f"{stem} {preset}" if preset else stem
+        body.append('<div class="card">')
+        if preview:
+            preview_rel = preview.out.relative_to(ROOT).as_posix()
+            body.append(
+                f'<img src="{html.escape(preview_rel)}" '
+                f'alt="{html.escape(alt)} preview" loading="lazy">'
+            )
+        body.append('<div class="body">')
+        if preset:
+            body.append(f'<h3 class="name"><span class="variant">{html.escape(preset)}</span></h3>')
+        body.append('<div class="dl">')
+        body.append('<span class="label">download</span>')
+        body.append(f'<a href="{release_base}/{base}.stl" download>stl</a>')
+        body.append(f'<a href="{release_base}/{base}.3mf" download>3mf</a>')
+        body.append("</div>")
+        body.append("</div></div>")
+    body.append("</div>")
+
+    body.append(footer(repo))
+    return page(f"{stem} — {repo_name}", body)
 
 
 def main() -> int:
@@ -188,7 +242,16 @@ def main() -> int:
     out_dir = Path(args.out)
     out_dir.mkdir(parents=True, exist_ok=True)
 
-    (out_dir / "index.html").write_text(render(repo))
+    targets = plan_targets()
+    scenes = sorted(
+        (t for t in targets if t.ext == "png" and is_scene(t.scad)),
+        key=lambda t: t.out.name,
+    )
+    projects = collect_projects(targets)
+
+    (out_dir / "index.html").write_text(render_index(repo, projects, scenes))
+    for p in projects:
+        (out_dir / p["page"]).write_text(render_detail(repo, p))
 
     site_previews = out_dir / "previews"
     if site_previews.exists():
@@ -197,7 +260,7 @@ def main() -> int:
     for png in sorted(PREVIEW.glob("*.png")):
         shutil.copy2(png, site_previews / png.name)
 
-    print(f"site: wrote {out_dir/'index.html'} "
+    print(f"site: wrote index + {len(projects)} project pages "
           f"({len(list(site_previews.glob('*.png')))} previews, repo={repo})")
     return 0
 
