@@ -18,13 +18,31 @@ $fs = 0.5;
 // sitting squarely on it. The port face (2× USB-C + jack) stays on -Y,
 // toward the camera.
 macmini_top = 49.72;
+mac_back_y  = -63.38;   // Y of the port (back) face after centering
+
+// Mac body, upright and centred, sitting on Z=0. The STL imports
+// upside-down with an off-origin footprint, so: recentre XY, flip upright
+// (180° about Y), then lift the flipped body (which lands at Z<0) onto Z=0.
+module mac_solid() {
+    translate([0, 0, macmini_top])
+        rotate([0, 180, 0])
+            translate([-125, -105, 0])
+                import("vendor/macmini_m4.stl", convexity = 10);
+}
 
 module mac() {
-    color([0.80, 0.81, 0.84])
-        translate([0, 0, macmini_top])
-            rotate([0, 180, 0])
-                translate([-125, -105, 0])
-                    import("vendor/macmini_m4.stl", convexity = 10);
+    color([0.80, 0.81, 0.84]) mac_solid();
+    // Darken the port interiors: a thin slab hugging the back face, minus the
+    // body. Flat areas are fully inside the body (subtracted away); only the
+    // recessed port pockets survive, so they read as dark.
+    color([0.05, 0.05, 0.07])
+        difference() {
+            // Kept within the flat central back panel — overrunning onto the
+            // rounded side/top edges would leave dark blocks where the body
+            // curves forward, away from the slab.
+            translate([-43, mac_back_y + 0.4, 11]) cube([86, 4, 28]);
+            mac_solid();
+        }
 }
 
 chain = ["plug", "pass-through", "socket"];
