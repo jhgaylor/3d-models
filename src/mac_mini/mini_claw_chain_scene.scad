@@ -40,7 +40,7 @@ module mac() {
             // Kept within the flat central back panel — overrunning onto the
             // rounded side/top edges would leave dark blocks where the body
             // curves forward, away from the slab.
-            translate([-43, mac_back_y + 0.4, 11]) cube([86, 4, 28]);
+            translate([-37, mac_back_y + 0.4, 11]) cube([74, 4, 28]);
             mac_solid();
         }
 }
