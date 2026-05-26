@@ -56,6 +56,8 @@ git push origin v0.1.0
 
 <!-- BEGIN MODELS -->
 
+<img src="previews/mini_claw_chain_scene.png" alt="assembly preview" width="100%">
+
 ## Models
 
 ### Mac Mini

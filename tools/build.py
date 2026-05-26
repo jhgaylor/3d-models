@@ -152,6 +152,12 @@ def build_one(t: Target) -> tuple[Target, bool, str]:
 
 
 def render_models_section(targets: list[Target]) -> str:
+    # Scene/hero renders shown as a banner above the model tables.
+    scenes = sorted(
+        (t for t in targets if t.ext == "png" and is_scene(t.scad)),
+        key=lambda t: t.out.name,
+    )
+
     # Group PNG targets by source .scad, then by subfolder of src/
     by_scad: dict[Path, list[Target]] = {}
     for t in targets:
@@ -165,7 +171,12 @@ def render_models_section(targets: list[Target]) -> str:
         folder = scad.parent.relative_to(SRC).as_posix()  # "." or "mac_mini" etc.
         by_folder.setdefault(folder, []).append(scad)
 
-    lines: list[str] = ["", "## Models", ""]
+    lines: list[str] = [""]
+    for s in scenes:
+        rel = s.out.relative_to(ROOT).as_posix()
+        lines.append(f'<img src="{rel}" alt="assembly preview" width="100%">')
+        lines.append("")
+    lines += ["## Models", ""]
     for folder in sorted(by_folder):
         heading = folder if folder != "." else "misc"
         lines.append(f"### {heading.replace('_', ' ').title()}")
