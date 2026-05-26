@@ -26,17 +26,31 @@ from build import ROOT, PREVIEW, plan_targets, is_scene  # noqa: E402
 SITE = ROOT / "site"
 
 CSS = """\
-:root { color-scheme: light dark; --max: 1100px; --gap: 24px; }
+:root { color-scheme: light dark; --max: 1100px; --gap: 24px;
+        --accent: #2563eb; --accent-dark: #1e40af; }
 * { box-sizing: border-box; }
-body { font: 15px/1.5 system-ui, -apple-system, sans-serif; max-width: var(--max);
-       margin: 2rem auto; padding: 0 1rem; }
+body { font: 15px/1.5 ui-sans-serif, system-ui, -apple-system, sans-serif;
+       max-width: var(--max); margin: 2rem auto; padding: 0 1rem; }
 a { color: inherit; }
 h1 { margin: 0 0 .25rem; }
 h2 { margin: 2.5rem 0 1rem; font-size: 1.25rem; }
-.lede { color: #666; margin: 0 0 1.5rem; }
 .back { display: inline-block; margin: 0 0 1.5rem; color: #666; font-size: 14px;
         text-decoration: none; }
 .back:hover { color: inherit; }
+.intro { background: linear-gradient(135deg, #eef2ff, #f9fafb);
+         border: 1px solid #0001; border-radius: 16px; padding: 2.25rem 2rem;
+         margin: 0 0 2.75rem; }
+.eyebrow { color: var(--accent); font-weight: 600; font-size: 13px;
+           letter-spacing: .05em; text-transform: uppercase; margin: 0 0 .5rem; }
+.intro h1 { font-size: clamp(1.6rem, 4vw, 2.3rem); line-height: 1.1; margin: 0 0 .75rem;
+            letter-spacing: -.01em; }
+.bio { color: #444; margin: 0 0 1.4rem; max-width: 62ch; }
+.cta { display: flex; flex-wrap: wrap; gap: 10px; }
+.btn { display: inline-block; padding: 9px 17px; border-radius: 9px; font-size: 14px;
+       font-weight: 500; text-decoration: none; border: 1px solid #0002; background: #fff; }
+.btn:hover { border-color: #0004; }
+.btn.primary { background: var(--accent); color: #fff; border-color: var(--accent); }
+.btn.primary:hover { background: var(--accent-dark); }
 .hero { width: 100%; aspect-ratio: 4/3; object-fit: contain; background: #f5f5f5;
         border: 1px solid #0002; border-radius: 10px; margin: 0 0 .5rem; display: block; }
 .credit { color: #888; font-size: 12px; margin: 0 0 2.5rem; }
@@ -63,6 +77,10 @@ a.card:hover { transform: translateY(-2px); box-shadow: 0 6px 20px #0002; }
 .footer code { background: #0001; padding: 1px 5px; border-radius: 3px; }
 @media (prefers-color-scheme: dark) {
   body { background: #111; color: #eee; }
+  .intro { background: linear-gradient(135deg, #16213e, #14161c); border-color: #fff2; }
+  .bio { color: #bbb; }
+  .btn { background: #1a1a1a; border-color: #fff2; }
+  .btn.primary { background: var(--accent); border-color: var(--accent); color: #fff; }
   .card { background: #1a1a1a; border-color: #fff2; }
   .card img { background: #222; }
   .meta, .footer, .tag { color: #aaa; }
@@ -92,8 +110,18 @@ def detect_repo() -> str:
     return "owner/repo"
 
 
-def collect_projects(targets: list) -> list[dict]:
-    """One project per source .scad (scenes excluded), with its variants."""
+def collect_projects(targets: list, scenes: list) -> list[dict]:
+    """One project per source .scad (scenes excluded), with its variants.
+
+    A scene render in the same category becomes that project's hero image
+    (card thumbnail + detail-page banner) instead of a variant preview.
+    """
+    scene_by_cat: dict[str, object] = {}
+    for s in scenes:
+        rel = s.scad.relative_to(ROOT / "src")
+        cat = rel.parts[0] if len(rel.parts) > 1 else "other"
+        scene_by_cat.setdefault(cat, s)
+
     grouped: dict[tuple, list] = {}
     for t in targets:
         if is_scene(t.scad):
@@ -108,12 +136,14 @@ def collect_projects(targets: list) -> list[dict]:
         presets = sorted(p for p in pngs if p is not None)
         variants = ([(p, pngs[p]) for p in presets]
                     if presets else [(None, pngs.get(None))])
+        scene = scene_by_cat.get(category)
         projects.append({
             "stem": stem,
             "category": category,
             "src_rel": scad.relative_to(ROOT).as_posix(),
             "variants": variants,
-            "thumb": variants[0][1],
+            "scene": scene,
+            "thumb": scene or variants[0][1],
             "page": f"{stem}.html",
         })
     return sorted(projects, key=lambda p: (p["category"], p["stem"]))
@@ -136,31 +166,38 @@ def footer(repo: str) -> str:
     return (
         f'<p class="footer">Generated from <code>src/</code>. '
         f'Releases: <a href="https://github.com/{html.escape(repo)}/releases">all releases</a> · '
-        f'<a href="https://github.com/{html.escape(repo)}/releases/latest">latest</a>.</p>'
+        f'<a href="https://github.com/{html.escape(repo)}/releases/latest">latest</a>.<br>'
+        f'Mac mini model by '
+        f'<a href="https://www.printables.com/model/1057608-mac-mini-m4">Satyr</a> '
+        f'(<a href="https://creativecommons.org/licenses/by/4.0/">CC BY 4.0</a>).</p>'
     )
 
 
-def render_index(repo: str, projects: list[dict], scenes: list) -> str:
+def hero_intro(repo: str) -> str:
+    # Personal hero, styled after jakegaylor.com (blue-600 accent, builder voice).
+    return (
+        '<div class="intro">'
+        '<p class="eyebrow">Jake Gaylor</p>'
+        '<h1>I build things — software, teams, and the occasional 3D print.</h1>'
+        '<p class="bio">Technical cofounder and platform engineer with 15+ years '
+        'shipping products and scaling engineering orgs. This is my workshop for '
+        'parametric 3D-printable models: every part is generated from OpenSCAD '
+        'source, auto-built in CI, and released as STL&nbsp;+&nbsp;3MF. '
+        'Browse a project, grab the files, remix away.</p>'
+        '<div class="cta">'
+        '<a class="btn primary" href="https://jakegaylor.com">jakegaylor.com</a>'
+        '<a class="btn" href="mailto:jhgaylor@gmail.com">Email me</a>'
+        '<a class="btn" href="sms:+17204533994">Text me</a>'
+        '<a class="btn" href="https://jakegaylor.com/resume/">Résumé</a>'
+        f'<a class="btn" href="https://github.com/{html.escape(repo)}">GitHub</a>'
+        '</div></div>'
+    )
+
+
+def render_index(repo: str, projects: list[dict]) -> str:
     repo_name = repo.split("/")[-1]
     body: list[str] = []
-    body.append(f"<h1>{html.escape(repo_name)}</h1>")
-    body.append(
-        f'<p class="lede">3D-printable models, generated from '
-        f'<a href="https://github.com/{html.escape(repo)}">{html.escape(repo)}</a>. '
-        f"Pick a project to see its parts and downloads.</p>"
-    )
-
-    for scene in scenes:
-        scene_rel = scene.out.relative_to(ROOT).as_posix()
-        body.append(
-            f'<img class="hero" src="{html.escape(scene_rel)}" '
-            f'alt="assembly preview" loading="lazy">'
-        )
-        body.append(
-            '<p class="credit">Mac mini model by '
-            '<a href="https://www.printables.com/model/1057608-mac-mini-m4">Satyr</a>, '
-            '<a href="https://creativecommons.org/licenses/by/4.0/">CC BY 4.0</a>.</p>'
-        )
+    body.append(hero_intro(repo))
 
     by_category: dict[str, list[dict]] = {}
     for p in projects:
@@ -188,7 +225,7 @@ def render_index(repo: str, projects: list[dict], scenes: list) -> str:
         body.append("</div>")
 
     body.append(footer(repo))
-    return page(f"{repo_name} — projects", body)
+    return page("Jake Gaylor · 3D-printable models", body)
 
 
 def render_detail(repo: str, project: dict) -> str:
@@ -204,6 +241,14 @@ def render_detail(repo: str, project: dict) -> str:
         f'<p class="meta">{html.escape(project["category"].replace("_", " "))} · '
         f'<a href="{html.escape(src_url)}">view source</a></p>'
     )
+
+    scene = project.get("scene")
+    if scene:
+        scene_rel = scene.out.relative_to(ROOT).as_posix()
+        body.append(
+            f'<img class="hero" src="{html.escape(scene_rel)}" '
+            f'alt="{html.escape(stem)} assembled" loading="lazy">'
+        )
 
     body.append('<div class="grid">')
     for preset, preview in project["variants"]:
@@ -247,9 +292,9 @@ def main() -> int:
         (t for t in targets if t.ext == "png" and is_scene(t.scad)),
         key=lambda t: t.out.name,
     )
-    projects = collect_projects(targets)
+    projects = collect_projects(targets, scenes)
 
-    (out_dir / "index.html").write_text(render_index(repo, projects, scenes))
+    (out_dir / "index.html").write_text(render_index(repo, projects))
     for p in projects:
         (out_dir / p["page"]).write_text(render_detail(repo, p))
 
