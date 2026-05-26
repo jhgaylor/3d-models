@@ -58,6 +58,8 @@ git push origin v0.1.0
 
 <img src="previews/mini_claw_chain_scene.png" alt="assembly preview" width="100%">
 
+<sub>Mac mini model by <a href="https://www.printables.com/model/1057608-mac-mini-m4">Satyr</a>, <a href="https://creativecommons.org/licenses/by/4.0/">CC BY 4.0</a>.</sub>
+
 ## Models
 
 ### Mac Mini

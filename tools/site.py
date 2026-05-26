@@ -30,7 +30,9 @@ h1 { margin: 0 0 .25rem; }
 h2 { margin: 2.5rem 0 1rem; font-size: 1.25rem; }
 .lede { color: #666; margin: 0 0 1.5rem; }
 .hero { width: 100%; aspect-ratio: 4/3; object-fit: contain; background: #f5f5f5;
-        border: 1px solid #0002; border-radius: 10px; margin: 0 0 2.5rem; display: block; }
+        border: 1px solid #0002; border-radius: 10px; margin: 0 0 .5rem; display: block; }
+.credit { color: #888; font-size: 12px; margin: 0 0 2.5rem; }
+.credit a { color: inherit; }
 .grid { display: grid; gap: var(--gap);
         grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); }
 .card { border: 1px solid #0002; border-radius: 8px; overflow: hidden;
@@ -121,6 +123,11 @@ def render(repo: str) -> str:
         out.append(
             f'<img class="hero" src="{html.escape(scene_rel)}" '
             f'alt="assembly preview" loading="lazy">'
+        )
+        out.append(
+            '<p class="credit">Mac mini model by '
+            '<a href="https://www.printables.com/model/1057608-mac-mini-m4">Satyr</a>, '
+            '<a href="https://creativecommons.org/licenses/by/4.0/">CC BY 4.0</a>.</p>'
         )
 
     for category in sorted(by_category):

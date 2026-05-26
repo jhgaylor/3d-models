@@ -11,47 +11,20 @@ include <mini_claw_dovetail.scad>
 $fa = 2;
 $fs = 0.5;
 
-mini_vr = 10;     // vertical corner radius (the Mac's signature rounded sides)
-mini_er = 2.5;    // top/bottom edge round
-
-// Rounded-corner aluminium body, centred in XY, sitting on Z=0.
-module mac_body() {
-    translate([0, 0, mini_er])
-        minkowski() {
-            linear_extrude(mini_h - 2*mini_er)
-                offset(r = mini_vr - mini_er)
-                    square([mini_w - 2*mini_vr, mini_w - 2*mini_vr], center = true);
-            sphere(r = mini_er, $fn = 20);
-        }
-}
-
-// Vertical USB-C pill: width w × height h, recessed into the -Y face by t.
-module usb_c(t, w = 3.3, h = 8) {
-    rotate([-90, 0, 0])
-        linear_extrude(t)
-            offset(r = w/2) square([0.01, h - w], center = true);
-}
-
-// Front I/O on the -Y face — M4 layout, left → right:
-//   2× USB-C (vertical), power LED, headphone jack.
-io_z = 24;
-module front_io(t) {
-    translate([0, -mini_w/2, io_z]) {
-        translate([-27, 0, 0]) usb_c(t);
-        translate([-14, 0, 0]) usb_c(t);
-        translate([ 28, 0, 0]) rotate([-90, 0, 0]) cylinder(d = 4, h = t);   // headphone jack
-    }
-}
+// Detailed Mac mini M4 mesh (see vendor/ATTRIBUTION.md). The STL imports
+// upside-down (vent ring + power button on the up-face) with its footprint
+// centred at (125, 105). Recentre it on the origin, flip it upright (180°
+// about Y), and lift so the flat top lands at macmini_top with the claws
+// sitting squarely on it. The port face (2× USB-C + jack) stays on -Y,
+// toward the camera.
+macmini_top = 49.72;
 
 module mac() {
-    difference() {
-        color([0.60, 0.61, 0.64]) mac_body();   // brushed-aluminium silver
-        front_io(4.1);                            // recess the ports
-    }
-    color([0.06, 0.06, 0.08])                     // dark port faces, inset in the recess
-        translate([0, 1.2, 0]) front_io(2.4);
-    color([0.85, 0.90, 0.85])                     // power LED — small bright dot
-        translate([17, -mini_w/2 + 0.3, io_z]) rotate([-90, 0, 0]) cylinder(d = 1.6, h = 0.6);
+    color([0.80, 0.81, 0.84])
+        translate([0, 0, macmini_top])
+            rotate([0, 180, 0])
+                translate([-125, -105, 0])
+                    import("vendor/macmini_m4.stl", convexity = 10);
 }
 
 chain = ["plug", "pass-through", "socket"];
@@ -60,7 +33,7 @@ for (i = [0 : len(chain) - 1])
     translate([i * chain_pitch, 0, 0]) {
         mac();
         color([0.93, 0.46, 0.13])
-            translate([0, 0, mini_h])
+            translate([0, 0, macmini_top])
                 claw(chain[i]);
     }
 
