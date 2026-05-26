@@ -104,6 +104,13 @@ handle_h   = 48;         // rises above the roof plate
 grip_l     = 96;
 grip_h     = 26;
 
+/* ── Shelf (removable upper-rear tray) ───────────────── */
+shelf_z   = 110;         // rail top surface height
+shelf_y0  = 133;         // shelf spans this Y back to the rear wall
+ledge_w   = 8;           // rail inward protrusion from the side wall
+ledge_t   = 4;           // rail thickness
+shelf_rim = 18;          // tray wall height
+
 /* ── Style ───────────────────────────────────────────── */
 rib_spacing = 11;
 rib_width   = 1.2;
@@ -184,6 +191,12 @@ module cab_body() {
             for (s = [-1, 1])
                 translate([wall + caddy_cx + s*dt_off, wall + dt_cy - dt_length/2, flr])
                     dt_tongue(0);
+            // Shelf rails on the side walls — outside the caddy's width so the
+            // caddy still drops straight in; the shelf rests on these like a drawer.
+            translate([wall, shelf_y0, shelf_z])
+                cube([ledge_w, (ed - wall) - shelf_y0, ledge_t]);
+            translate([ew - wall - ledge_w, shelf_y0, shelf_z])
+                cube([ledge_w, (ed - wall) - shelf_y0, ledge_t]);
             // Hinge knuckles at both front corners
             frame_hinge_left();
             translate([ew, 0, 0]) mirror([1, 0, 0]) frame_hinge_left();
@@ -227,6 +240,23 @@ module cab_caddy() {
                     dt_tongue(dt_gap);
         }
     }
+}
+
+/* ── Shelf (removable, rests on the side rails) ──────── */
+module cab_shelf() {
+    sx = (ew - wall - 0.5) - (wall + 0.5);     // ~249 — snug between the walls
+    sy = (ed - wall) - shelf_y0 - 1;           // rear-band depth
+    fl = 3;
+    translate([wall + 0.5, shelf_y0 + 0.5, shelf_z + ledge_t])
+        difference() {
+            rbox(sx, sy, shelf_rim, r = 3);
+            // two open compartments split by a centre divider
+            translate([3, 3, fl])            rbox(sx/2 - 4.5, sy - 6, shelf_rim, r = 2);
+            translate([sx/2 + 1.5, 3, fl])   rbox(sx/2 - 4.5, sy - 6, shelf_rim, r = 2);
+            // finger holes near the front edge — hook to lift the shelf out
+            for (fx = [sx*0.32, sx*0.68])
+                translate([fx, 10, -1]) cylinder(d = 22, h = fl + 2);
+        }
 }
 
 /* ── Door (left leaf) ────────────────────────────────── */
@@ -276,6 +306,7 @@ module cab_roof() {
 /* ── Render ──────────────────────────────────────────── */
 if (part == "body")  cab_body();
 if (part == "caddy") cab_caddy();
+if (part == "shelf") cab_shelf();
 if (part == "door")  cab_door();
 if (part == "roof")  cab_roof();
 
@@ -284,6 +315,6 @@ echo(str("Part        : ", part));
 echo(str("Exterior    : ", ew, " × ", ed, " × ", wall_h + wall, " mm"));
 echo(str("Interior    : ", iw, " × ", idp, " × ", ih, " mm"));
 echo("Layout      : Peak dock + bucket up front, knife/jar caddy at rear");
-echo("Capture     : caddy dovetails lock laterally; doors magnet-latch; roof closes the top");
-echo("Note        : tall Peak box → roof can't reach low caddy; upright carry relies on gravity");
+echo("Shelf       : removable tray on side rails over the rear, using the upper dead space");
+echo("Capture     : caddy dovetails lock laterally; doors magnet-latch; designed for upright carry (gravity)");
 echo("Hinge pin   : 3 mm rod / filament, bore 3.2 mm");

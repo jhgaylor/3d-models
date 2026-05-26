@@ -29,6 +29,9 @@ module swing_left(ang) {
 color("#9aa0a6") cab_body();
 color("#8d6e63") cab_caddy();                       // seated on its dovetails
 
+// Removable shelf lifted off its side rails (exploded above the caddy)
+color("#26a69a") translate([0, 0, 55]) cab_shelf();
+
 // Roof lifted off above, to show the handle
 color("#c4c8cc") translate([0, 0, wall_h + 70]) cab_roof();
 
