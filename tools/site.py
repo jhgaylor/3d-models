@@ -196,7 +196,7 @@ def hero_intro(repo: str) -> str:
     return (
         '<div class="intro">'
         '<p class="eyebrow">Jake Gaylor</p>'
-        '<h1>I build things — software, teams, and the occasional 3D print.</h1>'
+        '<h1>I build things — software, teams, and the occasional 3D model.</h1>'
         '<p class="bio">Technical cofounder and platform engineer with 15+ years '
         'shipping products and scaling engineering orgs. This is my workshop for '
         'parametric 3D-printable models: every part is generated from OpenSCAD '
