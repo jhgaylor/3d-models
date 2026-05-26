@@ -1,0 +1,7 @@
+{
+    "parameterSets": {
+        "body": { "part": "body" },
+        "door": { "part": "door" },
+        "roof": { "part": "roof" }
+    }
+}
