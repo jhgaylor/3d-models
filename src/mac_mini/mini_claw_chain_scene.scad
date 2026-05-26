@@ -25,19 +25,21 @@ module mac_body() {
         }
 }
 
-// USB-C pill: width w, height h, extruded into the face by t (in +Y).
-module usb_slot(w, h, t) {
+// Vertical USB-C pill: width w × height h, recessed into the -Y face by t.
+module usb_c(t, w = 3.3, h = 8) {
     rotate([-90, 0, 0])
         linear_extrude(t)
-            hull() for (sx = [-1, 1]) translate([sx * (w/2 - h/2), 0]) circle(d = h);
+            offset(r = w/2) square([0.01, h - w], center = true);
 }
 
-// Front I/O on the -Y face: headphone jack + 2 USB-C, extending +Y by t.
+// Front I/O on the -Y face — M4 layout, left → right:
+//   2× USB-C (vertical), power LED, headphone jack.
+io_z = 24;
 module front_io(t) {
-    translate([0, -mini_w/2, 15]) {
-        translate([-17, 0, 0]) rotate([-90, 0, 0]) cylinder(d = 3.8, h = t);
-        translate([-2,  0, 0]) usb_slot(9, 3.4, t);
-        translate([11,  0, 0]) usb_slot(9, 3.4, t);
+    translate([0, -mini_w/2, io_z]) {
+        translate([-27, 0, 0]) usb_c(t);
+        translate([-14, 0, 0]) usb_c(t);
+        translate([ 28, 0, 0]) rotate([-90, 0, 0]) cylinder(d = 4, h = t);   // headphone jack
     }
 }
 
@@ -48,6 +50,8 @@ module mac() {
     }
     color([0.06, 0.06, 0.08])                     // dark port faces, inset in the recess
         translate([0, 1.2, 0]) front_io(2.4);
+    color([0.85, 0.90, 0.85])                     // power LED — small bright dot
+        translate([17, -mini_w/2 + 0.3, io_z]) rotate([-90, 0, 0]) cylinder(d = 1.6, h = 0.6);
 }
 
 chain = ["plug", "pass-through", "socket"];
