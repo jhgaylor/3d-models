@@ -134,7 +134,12 @@ def needs_rebuild(t: Target) -> bool:
 
 def build_one(t: Target) -> tuple[Target, bool, str]:
     t.out.parent.mkdir(parents=True, exist_ok=True)
-    cmd = [OPENSCAD, "--hardwarnings", "-o", str(t.out)]
+    cmd = [OPENSCAD, "-o", str(t.out)]
+    # --hardwarnings catches non-manifold geometry on printable parts. Scenes
+    # are visual-only and set $vp* (which warns "viewall/autocenter disabled"),
+    # so skip the strict check for them.
+    if not is_scene(t.scad):
+        cmd += ["--hardwarnings"]
     if t.ext == "png":
         cmd += [f"--imgsize={IMG_SIZE}", f"--colorscheme={COLORSCHEME}"]
     if t.preset:
