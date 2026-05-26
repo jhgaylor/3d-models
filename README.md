@@ -62,6 +62,8 @@ git push origin v0.1.0
 
 <img src="previews/puffco_dock_cabinet_scene.png" alt="assembly preview" width="100%">
 
+<img src="previews/puffco_kit_box_scene.png" alt="assembly preview" width="100%">
+
 ## Models
 
 ### Mac Mini
@@ -75,6 +77,7 @@ git push origin v0.1.0
 | | Model | Parts |
 |---|---|---|
 | <img src="previews/puffco_dock_cabinet.body.png" width="120"> | [`puffco_dock_cabinet`](src/puffco/puffco_dock_cabinet.scad) | `body` · `door` · `roof` |
+| <img src="previews/puffco_kit_box.body.png" width="120"> | [`puffco_kit_box`](src/puffco/puffco_kit_box.scad) | `body` · `caddy` · `door` · `roof` |
 | <img src="previews/puffco_knife_jar_tray.lid.png" width="120"> | [`puffco_knife_jar_tray`](src/puffco/puffco_knife_jar_tray.scad) | `lid` · `tray` |
 | <img src="previews/puffco_modular_tray.bucket.png" width="120"> | [`puffco_modular_tray`](src/puffco/puffco_modular_tray.scad) | `bucket` · `dock` · `knife_jar` · `lid` |
 
