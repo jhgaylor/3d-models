@@ -1,0 +1,8 @@
+{
+    "parameterSets": {
+        "carcass": { "part": "carcass" },
+        "deck":    { "part": "deck"    },
+        "drawer":  { "part": "drawer"  },
+        "lid":     { "part": "lid"     }
+    }
+}

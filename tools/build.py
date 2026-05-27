@@ -176,12 +176,14 @@ def render_models_section(targets: list[Target]) -> str:
         rel = s.out.relative_to(ROOT).as_posix()
         lines.append(f'<img src="{rel}" alt="assembly preview" width="100%">')
         lines.append("")
-        lines.append(
-            '<sub>Mac mini model by '
-            '<a href="https://www.printables.com/model/1057608-mac-mini-m4">Satyr</a>, '
-            '<a href="https://creativecommons.org/licenses/by/4.0/">CC BY 4.0</a>.</sub>'
-        )
-        lines.append("")
+        # Attribution only applies to scenes that embed the third-party Mac mini model.
+        if s.scad.parent.name == "mac_mini":
+            lines.append(
+                '<sub>Mac mini model by '
+                '<a href="https://www.printables.com/model/1057608-mac-mini-m4">Satyr</a>, '
+                '<a href="https://creativecommons.org/licenses/by/4.0/">CC BY 4.0</a>.</sub>'
+            )
+            lines.append("")
     lines += ["## Models", ""]
     for folder in sorted(by_folder):
         heading = folder if folder != "." else "misc"
