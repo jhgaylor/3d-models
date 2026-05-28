@@ -60,6 +60,8 @@ git push origin v0.1.0
 
 <sub>Mac mini model by <a href="https://www.printables.com/model/1057608-mac-mini-m4">Satyr</a>, <a href="https://creativecommons.org/licenses/by/4.0/">CC BY 4.0</a>.</sub>
 
+<img src="previews/puffco_dock_station_scene.png" alt="assembly preview" width="100%">
+
 <img src="previews/puffco_jar_knife_caddy_scene.png" alt="assembly preview" width="100%">
 
 ## Models
@@ -74,6 +76,7 @@ git push origin v0.1.0
 
 | | Model | Parts |
 |---|---|---|
+| <img src="previews/puffco_dock_station.lid.png" width="120"> | [`puffco_dock_station`](src/puffco/puffco_dock_station.scad) | `lid` · `tray` |
 | <img src="previews/puffco_jar_knife_caddy.carcass.png" width="120"> | [`puffco_jar_knife_caddy`](src/puffco/puffco_jar_knife_caddy.scad) | `carcass` · `deck` · `drawer` · `lid` |
 | <img src="previews/puffco_knife_jar_tray.lid.png" width="120"> | [`puffco_knife_jar_tray`](src/puffco/puffco_knife_jar_tray.scad) | `lid` · `tray` |
 | <img src="previews/puffco_modular_tray.bucket.png" width="120"> | [`puffco_modular_tray`](src/puffco/puffco_modular_tray.scad) | `bucket` · `dock` · `knife_jar` · `lid` |
