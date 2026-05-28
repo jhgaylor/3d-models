@@ -131,15 +131,12 @@ def detect_repo() -> str:
 def collect_projects(targets: list, scenes: list) -> list[dict]:
     """One project per source .scad (scenes excluded), with its variants.
 
-    A scene render in the same category becomes that project's hero image
-    (card thumbnail + detail-page banner) instead of a variant preview.
+    A scene render heroes a project (card thumbnail + detail-page banner)
+    instead of a variant preview. `<model>_scene.scad` heroes the `<model>`
+    project specifically. A scene whose name doesn't match any model (e.g.
+    mini_claw_chain_scene against the mini_claw_dovetail model) falls back to a
+    per-category hero for models in that category lacking their own scene.
     """
-    scene_by_cat: dict[str, object] = {}
-    for s in scenes:
-        rel = s.scad.relative_to(ROOT / "src")
-        cat = rel.parts[0] if len(rel.parts) > 1 else "other"
-        scene_by_cat.setdefault(cat, s)
-
     grouped: dict[tuple, list] = {}
     for t in targets:
         if is_scene(t.scad):
@@ -148,13 +145,26 @@ def collect_projects(targets: list, scenes: list) -> list[dict]:
         category = rel.parts[0] if len(rel.parts) > 1 else "other"
         grouped.setdefault((category, t.scad.stem, t.scad), []).append(t)
 
+    project_stems = {stem for (_cat, stem, _scad) in grouped}
+
+    scene_by_stem: dict[str, object] = {}
+    scene_fallback_by_cat: dict[str, object] = {}
+    for s in scenes:
+        rel = s.scad.relative_to(ROOT / "src")
+        cat = rel.parts[0] if len(rel.parts) > 1 else "other"
+        base = s.scad.stem.removesuffix("_scene")
+        if base in project_stems:
+            scene_by_stem[base] = s
+        else:
+            scene_fallback_by_cat.setdefault(cat, s)
+
     projects: list[dict] = []
     for (category, stem, scad), ts in grouped.items():
         pngs = {t.preset: t for t in ts if t.ext == "png"}
         presets = sorted(p for p in pngs if p is not None)
         variants = ([(p, pngs[p]) for p in presets]
                     if presets else [(None, pngs.get(None))])
-        scene = scene_by_cat.get(category)
+        scene = scene_by_stem.get(stem) or scene_fallback_by_cat.get(category)
         projects.append({
             "stem": stem,
             "category": category,
