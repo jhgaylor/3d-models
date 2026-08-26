@@ -78,4 +78,10 @@ git push origin v0.1.0
 | <img src="previews/puffco_knife_jar_tray.lid.png" width="120"> | [`puffco_knife_jar_tray`](src/puffco/puffco_knife_jar_tray.scad) | `lid` · `tray` |
 | <img src="previews/puffco_modular_tray.bucket.png" width="120"> | [`puffco_modular_tray`](src/puffco/puffco_modular_tray.scad) | `bucket` · `dock` · `knife_jar` · `lid` |
 
+### Shapes
+
+| | Model | Parts |
+|---|---|---|
+| <img src="previews/trapezoid_plate.png" width="120"> | [`trapezoid_plate`](src/shapes/trapezoid_plate.scad) | — |
+
 <!-- END MODELS -->
