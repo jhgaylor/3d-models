@@ -82,6 +82,7 @@ git push origin v0.1.0
 
 | | Model | Parts |
 |---|---|---|
+| <img src="previews/square_plate.png" width="120"> | [`square_plate`](src/shapes/square_plate.scad) | — |
 | <img src="previews/trapezoid_plate.png" width="120"> | [`trapezoid_plate`](src/shapes/trapezoid_plate.scad) | — |
 
 <!-- END MODELS -->
