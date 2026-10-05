@@ -1,8 +1,8 @@
 /* =====================================================
-   Square Plate — puzzle-split — assembly scene
+   Square Plate — split for gluing — assembly scene
    =====================================================
    Visual-only hero: the four tiles slightly exploded so
-   the jigsaw seams read. PNG only — see build.py
+   the half-lap steps read. PNG only — see build.py
    is_scene().
    ===================================================== */
 
@@ -12,7 +12,7 @@ use <square_plate_puzzle.scad>
 S    = 14.5 * 25.4;
 cols = 2;
 rows = 2;
-gap  = 12;   // explode distance between tiles
+gap  = 30;   // explode distance between tiles (> lap width)
 
 colors = ["#9aa0a6", "#7e57c2", "#c4c8cc", "#b0b6bb"];
 
@@ -23,5 +23,5 @@ for (i = [0 : cols - 1], j = [0 : rows - 1])
 
 // Camera — three-quarter view from front-above
 $vpt = [S/2 + gap/2, S/2 + gap/2, 0];
-$vpr = [50, 0, 25];
+$vpr = [58, 0, 25];
 $vpd = 1100;
