@@ -1,0 +1,9 @@
+{
+    "parameterSets": {
+        "front-left":  { "tile_col": "0", "tile_row": "0" },
+        "front-right": { "tile_col": "1", "tile_row": "0" },
+        "back-left":   { "tile_col": "0", "tile_row": "1" },
+        "back-right":  { "tile_col": "1", "tile_row": "1" }
+    },
+    "fileFormatVersion": "1"
+}
