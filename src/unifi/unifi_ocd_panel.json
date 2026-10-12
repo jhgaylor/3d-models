@@ -1,0 +1,17 @@
+{
+    "parameterSets": {
+        "blank-1u-left":        { "part": "panel", "style": "blank",       "units": "1", "piece": "0" },
+        "blank-1u-right":       { "part": "panel", "style": "blank",       "units": "1", "piece": "1" },
+        "blank-2u-left":        { "part": "panel", "style": "blank",       "units": "2", "piece": "0" },
+        "blank-2u-right":       { "part": "panel", "style": "blank",       "units": "2", "piece": "1" },
+        "vented-1u-left":       { "part": "panel", "style": "vented",      "units": "1", "piece": "0" },
+        "vented-1u-right":      { "part": "panel", "style": "vented",      "units": "1", "piece": "1" },
+        "vented-2u-left":       { "part": "panel", "style": "vented",      "units": "2", "piece": "0" },
+        "vented-2u-right":      { "part": "panel", "style": "vented",      "units": "2", "piece": "1" },
+        "passthrough-1u-left":  { "part": "panel", "style": "passthrough", "units": "1", "piece": "0" },
+        "passthrough-1u-right": { "part": "panel", "style": "passthrough", "units": "1", "piece": "1" },
+        "splice":               { "part": "splice", "units": "1" },
+        "fit-test":             { "part": "fit_test", "units": "1" }
+    },
+    "fileFormatVersion": "1"
+}
