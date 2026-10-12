@@ -1,0 +1,12 @@
+{
+    "parameterSets": {
+        "mac-mini-x3": { "part": "dock", "slots": "3", "slot_w": "51",   "dev_d": "127", "div_t": "6", "fin_h": "40", "back_keep": "28" },
+        "nucbox-m8":   { "part": "dock", "slots": "1", "slot_w": "66.5", "dev_d": "110", "div_t": "4", "fin_h": "35", "back_keep": "8" },
+        "bricks-x3":   { "part": "dock", "slots": "3", "slot_w": "33",   "dev_d": "200", "div_t": "4", "fin_h": "40", "back_keep": "8" },
+        "corner-left":  { "part": "corner_left" },
+        "corner-right": { "part": "corner_right" },
+        "pins":        { "part": "pins" },
+        "fit-test":    { "part": "fit_test" }
+    },
+    "fileFormatVersion": "1"
+}

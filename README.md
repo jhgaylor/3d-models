@@ -66,6 +66,8 @@ git push origin v0.1.0
 
 <img src="previews/unifi_ocd_panel_scene.png" alt="assembly preview" width="100%">
 
+<img src="previews/unifi_shelf_dock_scene.png" alt="assembly preview" width="100%">
+
 ## Models
 
 ### Mac Mini
@@ -97,5 +99,6 @@ git push origin v0.1.0
 | | Model | Parts |
 |---|---|---|
 | <img src="previews/unifi_ocd_panel.blank-1u-left.png" width="120"> | [`unifi_ocd_panel`](src/unifi/unifi_ocd_panel.scad) | `blank-1u-left` · `blank-1u-right` · `blank-2u-left` · `blank-2u-right` · `fit-test` · `passthrough-1u-left` · `passthrough-1u-right` · `splice` · `vented-1u-left` · `vented-1u-right` · `vented-2u-left` · `vented-2u-right` |
+| <img src="previews/unifi_shelf_dock.bricks-x3.png" width="120"> | [`unifi_shelf_dock`](src/unifi/unifi_shelf_dock.scad) | `bricks-x3` · `corner-left` · `corner-right` · `fit-test` · `mac-mini-x3` · `nucbox-m8` · `pins` |
 
 <!-- END MODELS -->
