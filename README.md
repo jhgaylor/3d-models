@@ -88,6 +88,7 @@ git push origin v0.1.0
 
 | | Model | Parts |
 |---|---|---|
+| <img src="previews/band.png" width="120"> | [`band`](src/shapes/band.scad) | — |
 | <img src="previews/irregular_pentagon_plate.png" width="120"> | [`irregular_pentagon_plate`](src/shapes/irregular_pentagon_plate.scad) | — |
 | <img src="previews/pentagon_plate.png" width="120"> | [`pentagon_plate`](src/shapes/pentagon_plate.scad) | — |
 | <img src="previews/square_plate.png" width="120"> | [`square_plate`](src/shapes/square_plate.scad) | — |
