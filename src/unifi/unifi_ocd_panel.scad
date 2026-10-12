@@ -155,7 +155,9 @@ module ledge_notch_2d(k) {
 module flange_cuts() {
     for (s = [-1, 1])
         translate([s * W/2, 0, 0]) rotate([90, 0, 90])
-            translate([0, 0, -flange_t - 1]) linear_extrude(flange_t + 2)
+            // straddle the outer face: the right flange lies inside it
+            // (-X), the left flange outside it (+X)
+            translate([0, 0, -flange_t - 1]) linear_extrude(2 * flange_t + 2)
                 difference() {
                     union() {
                         for (k = [0 : $units - 1]) pin_slot_2d(k * slot_pitch + pin_z);
