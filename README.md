@@ -64,6 +64,8 @@ git push origin v0.1.0
 
 <img src="previews/square_plate_puzzle_scene.png" alt="assembly preview" width="100%">
 
+<img src="previews/unifi_ocd_panel_scene.png" alt="assembly preview" width="100%">
+
 ## Models
 
 ### Mac Mini
@@ -89,5 +91,11 @@ git push origin v0.1.0
 | <img src="previews/square_plate.png" width="120"> | [`square_plate`](src/shapes/square_plate.scad) | — |
 | <img src="previews/square_plate_puzzle.back-left.png" width="120"> | [`square_plate_puzzle`](src/shapes/square_plate_puzzle.scad) | `back-left` · `back-right` · `front-left` · `front-right` |
 | <img src="previews/trapezoid_plate.png" width="120"> | [`trapezoid_plate`](src/shapes/trapezoid_plate.scad) | — |
+
+### Unifi
+
+| | Model | Parts |
+|---|---|---|
+| <img src="previews/unifi_ocd_panel.blank-1u-left.png" width="120"> | [`unifi_ocd_panel`](src/unifi/unifi_ocd_panel.scad) | `blank-1u-left` · `blank-1u-right` · `blank-2u-left` · `blank-2u-right` · `fit-test` · `passthrough-1u-left` · `passthrough-1u-right` · `splice` · `vented-1u-left` · `vented-1u-right` · `vented-2u-left` · `vented-2u-right` |
 
 <!-- END MODELS -->
