@@ -3,7 +3,8 @@
    =====================================================
    A thin cylindrical band.
 
-   Inner diameter : 120 mm
+   Inner diameter : 120 mm nominal + 0.5 mm clearance (120.5 mm
+                    printed). At exactly 120 it fit, but very snug.
    Height         : 3/4 in (19.05 mm)
    Wall           : 2.0 mm. That's 5 perimeters with a 0.4 mm
                     nozzle, so it prints solid wall-only. At this
@@ -20,12 +21,13 @@ $fn = 360;
 
 /* ── Dimensions (mm) ────────────────────────────────── */
 id      = 120;
+clear   = 0.5;      // added to the ID: 120 exact was super snug
 height  = 0.75 * 25.4;
 wall    = 2.0;
 chamfer = 0.4;
 
 /* ── Derived ────────────────────────────────────────── */
-ri = id / 2;
+ri = (id + clear) / 2;
 ro = ri + wall;
 c  = chamfer;
 
