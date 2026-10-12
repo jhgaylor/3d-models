@@ -84,6 +84,8 @@ git push origin v0.1.0
 
 | | Model | Parts |
 |---|---|---|
+| <img src="previews/irregular_pentagon_plate.png" width="120"> | [`irregular_pentagon_plate`](src/shapes/irregular_pentagon_plate.scad) | — |
+| <img src="previews/pentagon_plate.png" width="120"> | [`pentagon_plate`](src/shapes/pentagon_plate.scad) | — |
 | <img src="previews/square_plate.png" width="120"> | [`square_plate`](src/shapes/square_plate.scad) | — |
 | <img src="previews/square_plate_puzzle.back-left.png" width="120"> | [`square_plate_puzzle`](src/shapes/square_plate_puzzle.scad) | `back-left` · `back-right` · `front-left` · `front-right` |
 | <img src="previews/trapezoid_plate.png" width="120"> | [`trapezoid_plate`](src/shapes/trapezoid_plate.scad) | — |
