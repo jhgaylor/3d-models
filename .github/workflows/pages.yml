@@ -14,7 +14,7 @@ concurrency:
 
 jobs:
   build-and-deploy:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     permissions:
       contents: read
       pages: write
@@ -25,10 +25,17 @@ jobs:
     steps:
       - uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6
 
-      - name: Install OpenSCAD
+      - name: Install OpenSCAD (nightly, for the Manifold backend)
         run: |
+          # Ubuntu's openscad is 2021.01 (CGAL only), far too slow for the
+          # Boston lid. Use the official nightly from OpenSCAD's OBS repo.
+          repo=https://download.opensuse.org/repositories/home:/t-paul/xUbuntu_24.04
+          sudo install -d -m 0755 /etc/apt/keyrings
+          curl -fsSL "$repo/Release.key" | sudo gpg --dearmor -o /etc/apt/keyrings/openscad.gpg
+          echo "deb [signed-by=/etc/apt/keyrings/openscad.gpg] $repo/ ./" | sudo tee /etc/apt/sources.list.d/openscad.list
           sudo apt-get update
-          sudo apt-get install -y openscad xvfb
+          sudo apt-get install -y openscad-nightly xvfb
+          echo "OPENSCAD=openscad-nightly" >> "$GITHUB_ENV"
 
       - name: Build models (ensures previews are fresh)
         run: xvfb-run -a python3 tools/build.py
