@@ -3,3 +3,4 @@ site/
 .DS_Store
 __pycache__/
 .gstack/
+.cache/

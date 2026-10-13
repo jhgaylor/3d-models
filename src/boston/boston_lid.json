@@ -1,0 +1,10 @@
+{
+    "parameterSets": {
+        "tile-sw": { "part": "tile", "tile": "sw" },
+        "tile-se": { "part": "tile", "tile": "se" },
+        "tile-nw": { "part": "tile", "tile": "nw" },
+        "tile-ne": { "part": "tile", "tile": "ne" },
+        "tiles-keys": { "part": "keys" }
+    },
+    "fileFormatVersion": "1"
+}
