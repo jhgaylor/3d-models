@@ -13,6 +13,12 @@ includes:
 A poly is a list of rings, outer first, then holes. Map frame: x east,
 y north, mm, centred on (LAT0, LON0).
 
+Neighbouring columns are kept COL_GAP apart (see columns()). Columns that
+share a wall make a mesh that touches itself: OpenSCAD's union keeps the
+two coincident walls as distinct vertices at the same place, and the STL
+export (positions only) welds them into non-manifold edges. A gap this
+small prints as nothing, but it keeps every column a separate, clean prism.
+
 Raw Overpass responses are cached in .cache/osm/. Pass --refresh to
 re-download. Needs shapely (pip install shapely).
 
@@ -30,7 +36,7 @@ import urllib.parse
 import urllib.request
 from pathlib import Path
 
-from shapely import set_precision
+from shapely import STRtree, set_precision
 from shapely.geometry import LineString, Polygon, box
 from shapely.ops import linemerge, polygonize, unary_union
 
@@ -53,9 +59,10 @@ Z_STEP = 0.2                     # mm, height quantum (a layer)
 
 # ── Cleanup (mm) ────────────────────────────────────────
 OPEN_R = 0.3                     # drop building slivers thinner than 2×
-PINCH_R = 0.05                   # fuse corner-to-corner touches
 SIMPLIFY = 0.05
-GRID = 0.01                      # output precision; geometry is snapped to it
+COL_GAP = 0.015                  # between neighbouring columns (see columns())
+THIN_R = 0.002                   # drop bits of a column thinner than 2× after the inset
+PREC = 0.001                     # output grid
 SHORE = 1.0                      # solid rim inside water/park edges
 SOLID_UNDER = 0.8                # solid plate this far around buildings
 MIN_PARK = 100.0                 # mm², smaller parks stay solid
@@ -172,33 +179,6 @@ def opening(g, r: float):
     return g.buffer(-r, join_style="mitre").buffer(r, join_style="mitre")
 
 
-def closing(g, r: float):
-    """Fuse shapes that touch only at a corner."""
-    return g.buffer(r, join_style="mitre").buffer(-r, join_style="mitre")
-
-
-def snap(g):
-    """Snap to the output grid and fuse any pinch points.
-
-    Snapping can make two corners land on the same grid point. Where
-    shapes touch at a single point, the extruded mesh has two separate
-    edges in the same place, and STL welds them into one non-manifold
-    edge. A tiny on-grid square at each pinch fuses the shapes there."""
-    g = unary_union(polys_of(set_precision(g, GRID)))
-    for _ in range(4):
-        seen, pinch = set(), set()
-        for p in polys_of(g):
-            for ring in [p.exterior, *p.interiors]:
-                for c in list(ring.coords)[:-1]:
-                    (pinch if c in seen else seen).add(c)
-        if not pinch:
-            break
-        h = 2 * GRID
-        g = unary_union(polys_of(g) + [box(x - h, y - h, x + h, y + h) for x, y in pinch])
-        g = unary_union(polys_of(set_precision(g, GRID)))
-    return g
-
-
 # ── Layers ──────────────────────────────────────────────
 
 def buildings(els: list[dict], clip) -> list[tuple[float, Polygon]]:
@@ -220,10 +200,29 @@ def buildings(els: list[dict], clip) -> list[tuple[float, Polygon]]:
     return out
 
 
+def separate(g) -> list[Polygon]:
+    """Pull a column in by half of COL_GAP so it never touches a neighbour.
+
+    The lid extrudes each column and unions them. Where two columns of
+    different heights share a wall, or a taller column sits in a notch of
+    a lower one and touches its outline at a corner, the union leaves
+    separate vertices at the same place (the solid touches itself there),
+    and slicers read the STL as non-manifold. Insetting every column by
+    COL_GAP / 2 makes them disjoint prisms, so the union is trivially
+    clean. The gap is far below anything a printer resolves.
+
+    The inset can leave hair-thin cusps where a hole nearly met the shell;
+    an opening at THIN_R removes those, and snapping to PREC (the output
+    grid) means the written coordinates are exactly what was checked."""
+    g = g.buffer(-COL_GAP / 2, join_style="mitre")
+    g = set_precision(opening(g, THIN_R), PREC)
+    return [p for p in polys_of(g) if p.area > 0.05]
+
+
 def columns(blds: list[tuple[float, Polygon]]) -> list[tuple[float, list[Polygon]]]:
     """Terrace the buildings into nested levels R_z (everything at least z
     tall), clean each level, then split into disjoint columns R_z minus the
-    next level up."""
+    next level up, each pulled in by COL_GAP / 2 (see separate())."""
     by_z: dict[float, list[Polygon]] = {}
     for z, p in blds:
         by_z.setdefault(z, []).append(p)
@@ -239,20 +238,13 @@ def columns(blds: list[tuple[float, Polygon]]) -> list[tuple[float, list[Polygon
         g = opening(g, OPEN_R).simplify(SIMPLIFY)
         if below is not None:
             g = g.intersection(below)      # keep the terraces nested
-        # Fuse corner touches, then snap to the output grid before splitting
-        # into columns. Neighbouring walls then share exact coordinates and
-        # fuse in the union, instead of touching as separate faces (which
-        # STL welds into non-manifold edges).
-        g = snap(closing(g, PINCH_R))
-        if below is not None:
-            g = snap(g.intersection(below))
         cleaned.append((z, g))
         below = g
     cols = []
     for i, (z, g) in enumerate(cleaned):
         above = cleaned[i + 1][1] if i + 1 < len(cleaned) else None
         d = g.difference(above) if above is not None else g
-        ps = [p for p in polys_of(snap(d)) if p.area > 0.05]
+        ps = separate(d.buffer(0))
         if ps:
             cols.append((round(z, 2), ps))
     return cols
@@ -278,7 +270,7 @@ def coast_sea(els: list[dict], frame) -> list[Polygon]:
 
 def fmt_ring(coords) -> str:
     pts = list(coords)[:-1]
-    return "[" + ",".join(f"[{x:.2f},{y:.2f}]" for x, y in pts) + "]"
+    return "[" + ",".join(f"[{x:.3f},{y:.3f}]" for x, y in pts) + "]"
 
 
 def fmt_polys(ps: list[Polygon]) -> str:
@@ -314,8 +306,8 @@ def main() -> None:
     parks = unary_union(parks).intersection(frame).difference(water.buffer(SHORE))
     parks = parks.buffer(-SHORE).difference(solid)
 
-    water_ps = [p for p in polys_of(snap(water.simplify(SIMPLIFY))) if p.area > 4]
-    park_ps = [p for p in polys_of(snap(parks.simplify(SIMPLIFY))) if p.area > MIN_PARK]
+    water_ps = [p.simplify(SIMPLIFY) for p in polys_of(water) if p.area > 4]
+    park_ps = [p.simplify(SIMPLIFY) for p in polys_of(parks) if p.area > MIN_PARK]
 
     OUT.parent.mkdir(parents=True, exist_ok=True)
     with OUT.open("w") as f:
@@ -336,6 +328,24 @@ def main() -> None:
           f"{len(water_ps)} water, {len(park_ps)} park polys; "
           f"tallest {max(z for z, _ in cols):.1f} mm; "
           f"{OUT.relative_to(ROOT)} {OUT.stat().st_size / 1e6:.1f} MB")
+
+    # The lid relies on the columns never touching (see separate()). Check
+    # the written data: no two columns closer than half the gap, and no
+    # level whose outline touches itself (a coordinate used twice).
+    allp = [p for _, ps in cols for p in ps]
+    a, b = STRtree(allp).query(allp, predicate="dwithin", distance=COL_GAP / 2)
+    close = int((a < b).sum())
+    pinched = 0
+    for _, ps in cols:
+        seen: set = set()
+        for p in ps:
+            for ring in [p.exterior, *p.interiors]:
+                for c in list(ring.coords)[:-1]:
+                    pinched += c in seen
+                    seen.add(c)
+    if close or pinched:
+        raise SystemExit(f"columns touch: {close} pairs within {COL_GAP / 2} mm, "
+                         f"{pinched} self-touching vertices")
 
 
 if __name__ == "__main__":

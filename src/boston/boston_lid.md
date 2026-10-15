@@ -50,6 +50,14 @@ Each tile is 249.6 × 229.9 mm and prints plate side down with no supports. It f
 
 ## Printing
 
+- **Bambu printers: keep the tile out of the exclusion zone.** Bambu Studio blocks an area
+  of roughly 18 × 28 mm at the front-left corner of the plate (it's where the nozzle wipes
+  and the printer doesn't probe it when levelling). A 249.6 × 229.9 tile placed centred on
+  a 256 mm bed overlaps it, and Bambu Studio warns that the object is "too close to the
+  exclusion area". A corner printed over that zone also sits on an unprobed patch of the
+  bed, which is the likely cause of a lifted corner on a first print. Fix: rotate the tile
+  90° so the 229.9 mm side runs along X, then slide it right until its left edge is past
+  X = 18 mm (the warning goes away), or just use auto-arrange, which does the same.
 - **Material:** PETG (or ASA) is better than PLA. The lid sits in the rack's warm exhaust
   air and spans about 400 mm unsupported, and PLA creeps at those temperatures.
 - **Layers:** 0.2 mm. Heights are rounded to 0.2 mm steps.
@@ -89,6 +97,12 @@ python3 tools/boston_map.py --refresh  # re-download from Overpass
 
 The centre, scale, vertical exaggeration and building-height defaults are at the top
 of that script. Buildings with no `height` or `building:levels` tag get 10 m.
+
+The script keeps neighbouring building columns 0.015 mm apart (`COL_GAP`). Columns that
+share a wall produce a mesh that touches itself, which slicers report as non-manifold
+edges in the STL. The gap is far below what a printer resolves. After a rebuild,
+`python3 tools/check_3mf.py build/boston_lid.tile-*.3mf` should report `touching 0` for
+every tile.
 
 Map data © [OpenStreetMap contributors](https://www.openstreetmap.org/copyright),
 available under the ODbL.

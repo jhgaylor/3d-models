@@ -34,6 +34,13 @@
    Map: tools/boston_map.py, from OpenStreetMap.
    Map data © OpenStreetMap contributors, ODbL.
 
+   The buildings are disjoint columns, each extruded from
+   just inside the plate to its own height. The map data
+   keeps neighbouring columns 0.015 mm apart on purpose:
+   columns that share a wall give a union that touches
+   itself, which slicers read from the STL as non-manifold
+   edges (issue #16). The gap prints as nothing.
+
    Coordinates: X across the rack (map east), Y front to
    back (map north), Z up from the rack top.
    ===================================================== */
@@ -185,21 +192,15 @@ module plate() {
     }
 }
 
-// Stacked slabs. Slab i is everything at least map_cols[i][0] tall: the
-// union of column i and every taller column, merged in 2D, where shared
-// edges fuse exactly. Extruding the columns side by side instead leaves
-// coincident walls that the 3D union can keep as zero-width cracks, and
-// slicers see those as non-manifold edges.
+// One prism per column. The columns never touch each other (see the
+// header), so this union only has to cut them into the plate.
 module buildings() {
-    n = len(map_cols);
-    for (i = [0 : n - 1]) {
-        z0 = i == 0 ? 0 : map_cols[i - 1][0];
-        translate([0, 0, plate_t + z0 - eps])
-            linear_extrude(map_cols[i][0] - z0 + eps) intersection() {
+    translate([0, 0, plate_t - eps])
+        for (c = map_cols)
+            linear_extrude(c[0] + eps) intersection() {
                 offset(delta = -1) outline();
-                union() for (j = [i : n - 1]) polys(map_cols[j][1]);
+                polys(c[1]);
             }
-    }
 }
 
 module lid() { plate(); buildings(); }
