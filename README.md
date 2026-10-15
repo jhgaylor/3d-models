@@ -6,13 +6,19 @@ OpenSCAD source for 3D-printable models. Every `.scad` file builds to **STL** (f
 
 ```
 src/
+  boston/            # Boston relief-map rack lid (+ vendor/ OSM map data)
   mac_mini/          # Mac mini rack accessories
   puffco/            # Puffco accessories
+  shapes/            # Plain plates, rings, puzzles
+  unifi/             # UniFi Toolless Mini Rack panels and shelf docks
+  */*.md             # Per-model assembly notes; */vendor/ = third-party data (see ATTRIBUTION.md)
 build/               # Generated STL + 3MF (gitignored)
 previews/            # Generated PNG renders (tracked in git so README renders on GitHub)
 tools/build.py       # Build orchestrator (variants, parallelism, mtime-based rebuild)
+tools/site.py        # Static site (GitHub Pages)
+tools/boston_map.py  # Regenerates src/boston/vendor/boston_map.inc from OpenStreetMap
 Makefile             # Thin wrapper: make / make clean / make list / make force
-.github/workflows/   # CI: build, manifold check, artifact upload, release attach
+.github/workflows/   # CI: build, manifold check, artifact upload, release attach, Pages
 ```
 
 ## Variant matrix (parametric models)
@@ -29,20 +35,69 @@ No sidecar → a single output set: `build/<name>.{stl,3mf}` + `previews/<name>.
 
 The customizer JSON is what OpenSCAD's GUI saves when you "Add new parameter set" — so you can author presets visually and the build picks them up.
 
-## Local build
+## Fresh machine setup
 
-Install OpenSCAD (https://openscad.org/downloads.html), then:
+1. **Clone and get the tools**
+   ```sh
+   git clone git@github.com:jhgaylor/3d-models.git && cd 3d-models
+   ```
+   You need `python3` (3.10+), `make`, `git`, and the [`gh`](https://cli.github.com/) CLI if you'll cut releases.
+
+2. **Install OpenSCAD *nightly*.** The 2021.01 stable release is CGAL-only and can't render the Boston lid in any reasonable time. The nightly's Manifold backend can. CI uses the nightly too.
+   - **macOS:** `brew install --cask openscad@snapshot`, or download a snapshot from <https://openscad.org/downloads.html#snapshots>. The build auto-detects `/Applications/OpenSCAD.app`.
+   - **Ubuntu 24.04:** OpenSCAD's official nightly apt repo, the same steps CI uses (see `.github/workflows/build-stl.yml`):
+     ```sh
+     repo=https://download.opensuse.org/repositories/home:/t-paul/xUbuntu_24.04
+     sudo install -d -m 0755 /etc/apt/keyrings
+     curl -fsSL "$repo/Release.key" | sudo gpg --dearmor -o /etc/apt/keyrings/openscad.gpg
+     echo "deb [signed-by=/etc/apt/keyrings/openscad.gpg] $repo/ ./" | sudo tee /etc/apt/sources.list.d/openscad.list
+     sudo apt-get update && sudo apt-get install -y openscad-nightly
+     export OPENSCAD=openscad-nightly
+     ```
+   - **Check:** `openscad --help | grep -i manifold` should list the Manifold backend.
+
+3. **Python packages (only for regenerating map data).** `tools/build.py` uses only the standard library. `tools/boston_map.py` needs `shapely`:
+   ```sh
+   python3 -m venv .venv && .venv/bin/pip install shapely
+   .venv/bin/python tools/boston_map.py   # downloads OSM data into .cache/osm/ on first run
+   ```
+
+4. **Build:** `make JOBS=2` (see below). Check that `git status` shows no changes beyond what you expected.
+
+## Local build
 
 ```
 make             # build STL + 3MF + previews; regenerate README models section
+make JOBS=2      # same, with at most 2 OpenSCAD processes at once
 make force       # rebuild everything regardless of mtime
 make list        # show planned targets (sources → outputs)
 make clean       # wipe build/ and previews/*.png
 ```
 
+The build only re-renders outputs whose sources (or `include`d files) changed.
+
+**Watch memory on heavy models.** `make` defaults to one OpenSCAD process per CPU. The Boston lid's tiles each take a lot of RAM, and rendering all ten of its targets at once has exhausted a laptop. Use `make JOBS=2`, or render one target directly:
+
+```
+openscad --hardwarnings -o /tmp/tile.3mf -p src/boston/boston_lid.json -P tile-sw src/boston/boston_lid.scad
+```
+
 On macOS the build auto-detects `/Applications/OpenSCAD.app`. Elsewhere it uses `openscad` on `PATH`. Override with `OPENSCAD=/path/to/openscad make`.
 
 Builds run with `--hardwarnings`: non-manifold geometry, unset variables, and other warnings fail the build instead of silently producing broken STLs.
+
+Rendering can rewrite unrelated preview PNGs with byte-level churn. Before committing, revert any preview you didn't mean to change (`git checkout -- previews/<file>`).
+
+## Workflow
+
+1. Branch off `main` and commit there.
+2. Open a PR. The **`build`** check must pass. The `terragucci/plan` check fails on every PR and is unrelated.
+3. Squash-merge, then tag a release from `main`:
+   ```sh
+   git checkout main && git pull
+   git tag -a v0.X.Y -m "v0.X.Y: what changed" && git push origin v0.X.Y
+   ```
+   CI attaches every STL + 3MF to the GitHub Release.
 
 ## Getting model files
 
