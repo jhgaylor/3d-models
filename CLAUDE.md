@@ -7,7 +7,7 @@ OpenSCAD models that build to STL, 3MF and PNG. See README.md for the layout, th
 - **Never run a full parallel build on a laptop.** Use `make JOBS=2`, or render a single target with `-p <json> -P <preset>`. The Boston lid tiles have run the machine out of memory before.
 - Builds use `--hardwarnings`. Any warning fails a printable part.
 - After `make`, revert preview PNGs you didn't mean to change (`git checkout -- previews/<file>`). Rendering rewrites some of them byte for byte.
-- `python3 tools/check_3mf.py build/<file>.3mf` (on branch `boston-lid-manifold` until issue #16 lands) reports self-touching geometry that slicers call non-manifold, even when OpenSCAD reports the mesh as manifold.
+- `python3 tools/check_3mf.py build/<file>.3mf` reports self-touching geometry that slicers call non-manifold, even when OpenSCAD reports the mesh as manifold. The Boston lid tiles must show `touching 0`; `tools/boston_map.py` keeps building columns 0.015 mm apart to guarantee that (issue #16).
 
 ## Conventions
 - Each model is a `src/<group>/<name>.scad` with a header comment explaining the design and its measured dimensions. Presets go in `<name>.json` (customizer `parameterSets`), assembly notes in `<name>.md`, and a hero render in `<name>_scene.scad` (PNG only).

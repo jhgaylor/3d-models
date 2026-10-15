@@ -34,6 +34,13 @@
    Map: tools/boston_map.py, from OpenStreetMap.
    Map data © OpenStreetMap contributors, ODbL.
 
+   The buildings are disjoint columns, each extruded from
+   just inside the plate to its own height. The map data
+   keeps neighbouring columns 0.015 mm apart on purpose:
+   columns that share a wall give a union that touches
+   itself, which slicers read from the STL as non-manifold
+   edges (issue #16). The gap prints as nothing.
+
    Coordinates: X across the rack (map east), Y front to
    back (map north), Z up from the rack top.
    ===================================================== */
@@ -185,6 +192,8 @@ module plate() {
     }
 }
 
+// One prism per column. The columns never touch each other (see the
+// header), so this union only has to cut them into the plate.
 module buildings() {
     translate([0, 0, plate_t - eps])
         for (c = map_cols)
