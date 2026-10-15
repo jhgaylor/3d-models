@@ -30,6 +30,7 @@ import urllib.parse
 import urllib.request
 from pathlib import Path
 
+from shapely import set_precision
 from shapely.geometry import LineString, Polygon, box
 from shapely.ops import linemerge, polygonize, unary_union
 
@@ -52,7 +53,9 @@ Z_STEP = 0.2                     # mm, height quantum (a layer)
 
 # ── Cleanup (mm) ────────────────────────────────────────
 OPEN_R = 0.3                     # drop building slivers thinner than 2×
+PINCH_R = 0.05                   # fuse corner-to-corner touches
 SIMPLIFY = 0.05
+GRID = 0.01                      # output precision; geometry is snapped to it
 SHORE = 1.0                      # solid rim inside water/park edges
 SOLID_UNDER = 0.8                # solid plate this far around buildings
 MIN_PARK = 100.0                 # mm², smaller parks stay solid
@@ -169,6 +172,33 @@ def opening(g, r: float):
     return g.buffer(-r, join_style="mitre").buffer(r, join_style="mitre")
 
 
+def closing(g, r: float):
+    """Fuse shapes that touch only at a corner."""
+    return g.buffer(r, join_style="mitre").buffer(-r, join_style="mitre")
+
+
+def snap(g):
+    """Snap to the output grid and fuse any pinch points.
+
+    Snapping can make two corners land on the same grid point. Where
+    shapes touch at a single point, the extruded mesh has two separate
+    edges in the same place, and STL welds them into one non-manifold
+    edge. A tiny on-grid square at each pinch fuses the shapes there."""
+    g = unary_union(polys_of(set_precision(g, GRID)))
+    for _ in range(4):
+        seen, pinch = set(), set()
+        for p in polys_of(g):
+            for ring in [p.exterior, *p.interiors]:
+                for c in list(ring.coords)[:-1]:
+                    (pinch if c in seen else seen).add(c)
+        if not pinch:
+            break
+        h = 2 * GRID
+        g = unary_union(polys_of(g) + [box(x - h, y - h, x + h, y + h) for x, y in pinch])
+        g = unary_union(polys_of(set_precision(g, GRID)))
+    return g
+
+
 # ── Layers ──────────────────────────────────────────────
 
 def buildings(els: list[dict], clip) -> list[tuple[float, Polygon]]:
@@ -209,13 +239,20 @@ def columns(blds: list[tuple[float, Polygon]]) -> list[tuple[float, list[Polygon
         g = opening(g, OPEN_R).simplify(SIMPLIFY)
         if below is not None:
             g = g.intersection(below)      # keep the terraces nested
+        # Fuse corner touches, then snap to the output grid before splitting
+        # into columns. Neighbouring walls then share exact coordinates and
+        # fuse in the union, instead of touching as separate faces (which
+        # STL welds into non-manifold edges).
+        g = snap(closing(g, PINCH_R))
+        if below is not None:
+            g = snap(g.intersection(below))
         cleaned.append((z, g))
         below = g
     cols = []
     for i, (z, g) in enumerate(cleaned):
         above = cleaned[i + 1][1] if i + 1 < len(cleaned) else None
         d = g.difference(above) if above is not None else g
-        ps = [p for p in polys_of(d.buffer(0)) if p.area > 0.05]
+        ps = [p for p in polys_of(snap(d)) if p.area > 0.05]
         if ps:
             cols.append((round(z, 2), ps))
     return cols
@@ -277,8 +314,8 @@ def main() -> None:
     parks = unary_union(parks).intersection(frame).difference(water.buffer(SHORE))
     parks = parks.buffer(-SHORE).difference(solid)
 
-    water_ps = [p.simplify(SIMPLIFY) for p in polys_of(water) if p.area > 4]
-    park_ps = [p.simplify(SIMPLIFY) for p in polys_of(parks) if p.area > MIN_PARK]
+    water_ps = [p for p in polys_of(snap(water.simplify(SIMPLIFY))) if p.area > 4]
+    park_ps = [p for p in polys_of(snap(parks.simplify(SIMPLIFY))) if p.area > MIN_PARK]
 
     OUT.parent.mkdir(parents=True, exist_ok=True)
     with OUT.open("w") as f:

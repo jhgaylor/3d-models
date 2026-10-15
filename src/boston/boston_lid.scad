@@ -185,13 +185,21 @@ module plate() {
     }
 }
 
+// Stacked slabs. Slab i is everything at least map_cols[i][0] tall: the
+// union of column i and every taller column, merged in 2D, where shared
+// edges fuse exactly. Extruding the columns side by side instead leaves
+// coincident walls that the 3D union can keep as zero-width cracks, and
+// slicers see those as non-manifold edges.
 module buildings() {
-    translate([0, 0, plate_t - eps])
-        for (c = map_cols)
-            linear_extrude(c[0] + eps) intersection() {
+    n = len(map_cols);
+    for (i = [0 : n - 1]) {
+        z0 = i == 0 ? 0 : map_cols[i - 1][0];
+        translate([0, 0, plate_t + z0 - eps])
+            linear_extrude(map_cols[i][0] - z0 + eps) intersection() {
                 offset(delta = -1) outline();
-                polys(c[1]);
+                union() for (j = [i : n - 1]) polys(map_cols[j][1]);
             }
+    }
 }
 
 module lid() { plate(); buildings(); }
