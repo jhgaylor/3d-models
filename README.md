@@ -127,6 +127,12 @@ git push origin v0.1.0
 
 ## Models
 
+### Antenna
+
+| | Model | Parts |
+|---|---|---|
+| <img src="previews/dipole_wall_sleeve.png" width="120"> | [`dipole_wall_sleeve`](src/antenna/dipole_wall_sleeve.scad) | — |
+
 ### Boston
 
 | | Model | Parts |
