@@ -131,6 +131,7 @@ git push origin v0.1.0
 
 | | Model | Parts |
 |---|---|---|
+| <img src="previews/coax_cable_clip.png" width="120"> | [`coax_cable_clip`](src/antenna/coax_cable_clip.scad) | — |
 | <img src="previews/dipole_wall_sleeve.png" width="120"> | [`dipole_wall_sleeve`](src/antenna/dipole_wall_sleeve.scad) | — |
 
 ### Boston
@@ -138,6 +139,13 @@ git push origin v0.1.0
 | | Model | Parts |
 |---|---|---|
 | <img src="previews/boston_lid.tile-ne.png" width="120"> | [`boston_lid`](src/boston/boston_lid.scad) | `tile-ne` · `tile-nw` · `tile-se` · `tile-sw` · `tiles-keys` |
+
+### Kitchen
+
+| | Model | Parts |
+|---|---|---|
+| <img src="previews/bagel_shelf.png" width="120"> | [`bagel_shelf`](src/kitchen/bagel_shelf.scad) | — |
+| <img src="previews/pasta_bin.png" width="120"> | [`pasta_bin`](src/kitchen/pasta_bin.scad) | — |
 
 ### Mac Mini
 
@@ -152,6 +160,12 @@ git push origin v0.1.0
 | <img src="previews/puffco_jar_knife_caddy.carcass.png" width="120"> | [`puffco_jar_knife_caddy`](src/puffco/puffco_jar_knife_caddy.scad) | `carcass` · `deck` · `drawer` · `lid` |
 | <img src="previews/puffco_knife_jar_tray.lid.png" width="120"> | [`puffco_knife_jar_tray`](src/puffco/puffco_knife_jar_tray.scad) | `lid` · `tray` |
 | <img src="previews/puffco_modular_tray.bucket.png" width="120"> | [`puffco_modular_tray`](src/puffco/puffco_modular_tray.scad) | `bucket` · `dock` · `knife_jar` · `lid` |
+
+### Radio
+
+| | Model | Parts |
+|---|---|---|
+| <img src="previews/device_wall_mount.airspy-r2.png" width="120"> | [`device_wall_mount`](src/radio/device_wall_mount.scad) | `airspy-r2` · `sms-modem` |
 
 ### Shapes
 
