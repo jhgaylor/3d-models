@@ -1,0 +1,6 @@
+{
+    "parameterSets": {
+        "airspy-r2": { "dev_w": "41", "dev_l": "54", "dev_t": "25" },
+        "sms-modem": { "dev_w": "46", "dev_l": "90", "dev_t": "15" }
+    }
+}
