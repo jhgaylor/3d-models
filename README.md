@@ -113,11 +113,17 @@ git push origin v0.1.0
 
 <img src="previews/boston_lid_scene.png" alt="assembly preview" width="100%">
 
+<img src="previews/compute_bay_kit_scene.png" alt="assembly preview" width="100%">
+
 <img src="previews/mini_claw_chain_scene.png" alt="assembly preview" width="100%">
 
 <sub>Mac mini model by <a href="https://www.printables.com/model/1057608-mac-mini-m4">Satyr</a>, <a href="https://creativecommons.org/licenses/by/4.0/">CC BY 4.0</a>.</sub>
 
 <img src="previews/puffco_jar_knife_caddy_scene.png" alt="assembly preview" width="100%">
+
+<img src="previews/rack_brick_caddy_scene.png" alt="assembly preview" width="100%">
+
+<img src="previews/rack_fan_lid_scene.png" alt="assembly preview" width="100%">
 
 <img src="previews/square_plate_puzzle_scene.png" alt="assembly preview" width="100%">
 
@@ -139,6 +145,12 @@ git push origin v0.1.0
 | | Model | Parts |
 |---|---|---|
 | <img src="previews/boston_lid.tile-ne.png" width="120"> | [`boston_lid`](src/boston/boston_lid.scad) | `tile-ne` · `tile-nw` · `tile-se` · `tile-sw` · `tiles-keys` |
+
+### Furniture
+
+| | Model | Parts |
+|---|---|---|
+| <img src="previews/table_block.png" width="120"> | [`table_block`](src/furniture/table_block.scad) | — |
 
 ### Kitchen
 
@@ -182,6 +194,9 @@ git push origin v0.1.0
 
 | | Model | Parts |
 |---|---|---|
+| <img src="previews/compute_bay_kit.clips.png" width="120"> | [`compute_bay_kit`](src/unifi/compute_bay_kit.scad) | `clips` · `fins` · `fit-test` · `pins` · `riser-deck` · `riser-posts` |
+| <img src="previews/rack_brick_caddy.fit-test.png" width="120"> | [`rack_brick_caddy`](src/unifi/rack_brick_caddy.scad) | `fit-test` · `left` · `right` |
+| <img src="previews/rack_fan_lid.clips.png" width="120"> | [`rack_fan_lid`](src/unifi/rack_fan_lid.scad) | `clips` · `fit-test` · `keys` · `tile-ne` · `tile-nw` · `tile-se` · `tile-sw` |
 | <img src="previews/unifi_ocd_panel.blank-1u-left.png" width="120"> | [`unifi_ocd_panel`](src/unifi/unifi_ocd_panel.scad) | `blank-1u-left` · `blank-1u-right` · `blank-2u-left` · `blank-2u-right` · `fit-test` · `passthrough-1u-left` · `passthrough-1u-right` · `splice` · `vented-1u-left` · `vented-1u-right` · `vented-2u-left` · `vented-2u-right` |
 | <img src="previews/unifi_shelf_dock.bricks-x3.png" width="120"> | [`unifi_shelf_dock`](src/unifi/unifi_shelf_dock.scad) | `bricks-x3` · `corner-left` · `corner-right` · `fit-test` · `mac-mini-x3` · `nucbox-m8` · `pins` |
 

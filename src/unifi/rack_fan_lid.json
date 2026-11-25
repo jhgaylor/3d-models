@@ -1,0 +1,30 @@
+{
+    "parameterSets": {
+        "tile-sw": {
+            "part": "tile",
+            "tile": "sw"
+        },
+        "tile-se": {
+            "part": "tile",
+            "tile": "se"
+        },
+        "tile-nw": {
+            "part": "tile",
+            "tile": "nw"
+        },
+        "tile-ne": {
+            "part": "tile",
+            "tile": "ne"
+        },
+        "clips": {
+            "part": "clips"
+        },
+        "keys": {
+            "part": "keys"
+        },
+        "fit-test": {
+            "part": "fit_test"
+        }
+    },
+    "fileFormatVersion": "1"
+}

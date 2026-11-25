@@ -1,0 +1,11 @@
+{
+    "parameterSets": {
+        "fins": { "part": "fins" },
+        "riser-deck": { "part": "deck" },
+        "riser-posts": { "part": "posts" },
+        "clips": { "part": "clips" },
+        "pins": { "part": "pins" },
+        "fit-test": { "part": "fit_test" }
+    },
+    "fileFormatVersion": "1"
+}
