@@ -445,7 +445,9 @@ module fit_test() {
 module clip_print_stub() {
     on_bed() intersection() {
         clip();
-        translate([-20, tab_c - tab_w / 2 - 4, leg_z - 1]) cube([40, tab_w + 8, 20]);
+        // tall enough to keep the whole tab (it stands sock_d above the
+        // leg); a fixed 20 cut it off 0.8 mm up, leaving only its neck
+        translate([-20, tab_c - tab_w / 2 - 4, leg_z - 1]) cube([40, tab_w + 8, -leg_z + sock_d + 2]);
     }
 }
 
