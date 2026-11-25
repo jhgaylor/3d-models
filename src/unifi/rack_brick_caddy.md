@@ -73,7 +73,7 @@ fit-test checks the channel. Also check by eye that the bottom slot has a pin at
   - The skid piece should sit on the ledge and slide onto the thumbscrew until it stops.
     Then push the screw in and turn it. It should bite and hold the skid without stripping.
   - The joint pieces should drop together by hand with no wobble. If the joint is tight,
-    raise `tab_clear` (0.2 mm per side).
+    raise `tab_clear` (0.1 mm per side; 0.2 was loose).
 - **Material:** PETG. The bricks run hot, so PLA will slowly sag under them.
 - **Settings:** 0.2 mm layers, 3 walls, 20% infill. Beams down, no supports.
 

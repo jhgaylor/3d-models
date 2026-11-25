@@ -117,7 +117,7 @@ screw_len = 9;              // past the channel's floor
 tab_neck  = 6;
 tab_head  = 11;
 tab_len   = 9;
-tab_clear = 0.2;
+tab_clear = 0.1;            // 0.2 printed with pull-apart play
 pad_w     = 20;             // beams widen to this at the seam
 
 /* ── Derived ────────────────────────────────────────── */
