@@ -107,7 +107,7 @@ pin_head_d = 6.2;
 pin_head_t = 1.2;
 cbore_d    = 6.8;
 cbore_t    = 1.4;
-pin_peg    = 2.0;             // how far a pin pokes below the part
+pin_peg    = 4.0;             // how far a pin pokes below the part (into the shelf)
 pin_count  = 6;
 
 eps = 0.01;
@@ -203,9 +203,15 @@ module clip_profile() {
 module clip() { linear_extrude(clip_v) clip_profile(); }
 
 /* ── Pins ───────────────────────────────────────────── */
+// The shaft starts under the head: it spans the fin below the
+// counterbore, then pokes pin_peg out the bottom, tapered at the tip.
 module pin() {
+    shaft = fin_h - cbore_t + pin_peg;
     cylinder(d = pin_head_d, h = pin_head_t);
-    cylinder(d = pin_d, h = fin_h - cbore_t + pin_peg);
+    translate([0, 0, pin_head_t - eps]) {
+        cylinder(d = pin_d, h = shaft - 0.5 + eps);
+        translate([0, 0, shaft - 0.5]) cylinder(d1 = pin_d, d2 = pin_d - 1, h = 0.5);
+    }
 }
 
 /* ── Layout helpers (scenes include this file) ──────── */
