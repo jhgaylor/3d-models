@@ -1,0 +1,8 @@
+{
+    "parameterSets": {
+        "left": { "part": "left" },
+        "right": { "part": "right" },
+        "fit-test": { "part": "fit_test" }
+    },
+    "fileFormatVersion": "1"
+}
