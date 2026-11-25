@@ -49,9 +49,11 @@ channel on the outside of each skid is a 4.6 mm bridge.
 
 - **The skids ride on the ledges.** Like any UniFi gear, the tray slides in between the side
   slats and sits on the bottom slot's ledges.
-- **The side pin stops it at the right depth.** A channel in the outside of each skid catches
-  the slot's side pin as the tray slides in from the back. The pin bottoms out where the
-  channel ends.
+- **The side thumbscrew stops and locks it.** The rack's side "pin" is a spring-loaded M4
+  thumbscrew. A channel in the outside of each skid lets its tip ride in as the tray slides in
+  from the back, and the tray stops where the channel ends. Then push the screw in and turn
+  it: it taps its own thread into a 3.4 mm hole at the channel's end. If PETG threads strip,
+  set `screw_d = 5.6` and use an M4 heat-set insert.
 - **Only the skids reach the ledges.** Everything else stays inside the ledges' edges, so the
   2U tray passes the middle ledge.
 - **Heights:** the skids are 16 mm tall, well under the middle ledge. The bricks top out
@@ -68,7 +70,8 @@ fit-test checks the channel. Also check by eye that the bottom slot has a pin at
 ## Printing
 
 - **Print `fit-test` first.**
-  - The skid piece should sit on the ledge and slide onto the pin until the pin stops it.
+  - The skid piece should sit on the ledge and slide onto the thumbscrew until it stops.
+    Then push the screw in and turn it. It should bite and hold the skid without stripping.
   - The joint pieces should drop together by hand with no wobble. If the joint is tight,
     raise `tab_clear` (0.2 mm per side).
 - **Material:** PETG. The bricks run hot, so PLA will slowly sag under them.
@@ -79,9 +82,10 @@ fit-test checks the channel. Also check by eye that the bottom slot has a pin at
 1. Drop the left half's tabs into the right half's sockets.
 2. Slide the tray in from the back of the rack on the bottom slot's ledges until both side
    pins stop it.
-3. Stand the bricks in their notches, pushed back against the stops on the back beam.
+3. Push each side's thumbscrew in and screw it into its skid.
+4. Stand the bricks in their notches, pushed back against the stops on the back beam.
    Each brick's AC end faces the back. Lay the HDHomeRun between its guides.
-4. Plug the AC leads into the strip above. Run the DC leads up the side of the rack to the
+5. Plug the AC leads into the strip above. Run the DC leads up the side of the rack to the
    compute bay.
 
 To swap a brick for a different one, edit the `bricks` list at the top of the `.scad`
