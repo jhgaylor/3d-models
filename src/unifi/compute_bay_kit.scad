@@ -93,11 +93,12 @@ jaw_len     = 11;
 jaw_t       = 2.4;
 jaw_gap     = 1.85;           // ledge 1.65 + a little (1.75 spread the jaws)
 bump        = 0.1;            // friction bump on the top jaw (0.25 printed tight)
-hook_u      = 9.5;            // hook centre out from the ledge edge
+hook_u      = 8.8;            // hook centre out from the ledge edge (ring
+                              // stays inside the 19.7 mm band)
 hook_z      = -15;            // hook centre below the ledge top
-hook_r      = 7;              // inner radius: a bundle up to ~14 mm
+hook_r      = 8;              // inner radius: a bundle up to ~16 mm
 hook_wall   = 2;
-hook_mouth  = 5;              // opening at the bottom, toward the wall
+hook_mouth  = 7;              // opening at the bottom, toward the wall
 
 /* ── Shelf pins (same as unifi_shelf_dock) ──────────── */
 hole_pitch = 6.0;
