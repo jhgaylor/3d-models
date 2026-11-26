@@ -52,7 +52,7 @@ channel on the outside of each skid is a 4.6 mm bridge.
 - **The side thumbscrew stops and locks it.** The rack's side "pin" is a spring-loaded M4
   thumbscrew. A channel in the outside of each skid lets its tip ride in as the tray slides in
   from the back, and the tray stops where the channel ends. Then push the screw in and turn
-  it: it taps its own thread into a 3.4 mm hole at the channel's end. If PETG threads strip,
+  it: it taps its own thread into a 3.2 mm hole at the channel's end. If PETG threads strip,
   set `screw_d = 5.6` and use an M4 heat-set insert.
 - **Only the skids reach the ledges.** Everything else stays inside the ledges' edges, so the
   2U tray passes the middle ledge.

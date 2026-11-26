@@ -103,14 +103,15 @@ rail_h    = 8;
 
 /* ── Pin channel ────────────────────────────────────── */
 chan_w    = 4.6;            // pin 3.98 + clearance
-chan_deep = pin_reach + 0.5;
+chan_deep = pin_reach - side_gap + 0.4;   // just clears the screw tip at rest, so
+                            // the screw reaches as far into its hole as it can
 chan_lead = 1.5;            // flare at the open end
 // The side "pin" is really a spring-loaded thumbscrew (M4, measured
 // Ø3.98). Pushed in with nothing to bite, it springs back, so the
 // channel ends in a hole it screws into. 3.4 lets an M4 tap its own
-// thread in PETG; for an M4 heat-set insert make it 5.6 (and
+// thread in PETG (3.4 printed only just biting, so 3.2); for an M4 heat-set insert make it 5.6 (and
 // screw_len the insert's length + 1).
-screw_d   = 3.4;
+screw_d   = 3.2;
 screw_len = 9;              // past the channel's floor
 
 /* ── Centre joint (dovetail tabs, drop together) ────── */
