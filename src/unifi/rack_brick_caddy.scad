@@ -31,8 +31,10 @@
 
    The tray rides on the bottom slot's ledges like any
    UniFi gear: a skid on each side sits on the ledge, and a
-   channel in its outer face catches that slot's side pin,
-   which stops the tray at the right depth. It's 442 mm
+   channel in its outer face catches that slot's side
+   thumbscrew, which stops the tray at the right depth;
+   then the screw is pushed in and turned into the hole at
+   the channel's end to lock it. It's 442 mm
    wide, too wide for a 256 bed, so it prints as two halves
    that drop together with dovetail tabs at the centre.
 
@@ -101,14 +103,22 @@ rail_h    = 8;
 
 /* ── Pin channel ────────────────────────────────────── */
 chan_w    = 4.6;            // pin 3.98 + clearance
-chan_deep = pin_reach + 0.5;
+chan_deep = pin_reach - side_gap + 0.4;   // just clears the screw tip at rest, so
+                            // the screw reaches as far into its hole as it can
 chan_lead = 1.5;            // flare at the open end
+// The side "pin" is really a spring-loaded thumbscrew (M4, measured
+// Ø3.98). Pushed in with nothing to bite, it springs back, so the
+// channel ends in a hole it screws into. 3.4 lets an M4 tap its own
+// thread in PETG (3.4 printed only just biting, so 3.2); for an M4 heat-set insert make it 5.6 (and
+// screw_len the insert's length + 1).
+screw_d   = 3.2;
+screw_len = 9;              // past the channel's floor
 
 /* ── Centre joint (dovetail tabs, drop together) ────── */
 tab_neck  = 6;
 tab_head  = 11;
 tab_len   = 9;
-tab_clear = 0.2;
+tab_clear = 0.1;            // 0.2 printed with pull-apart play
 pad_w     = 20;             // beams widen to this at the seam
 
 /* ── Derived ────────────────────────────────────────── */
@@ -134,6 +144,9 @@ module skid(s) {
                 translate([0, -chan_lead, -chan_w / 2]) cube([chan_deep + 1, eps, chan_w]);
                 translate([0, eps, -chan_w / 2 - chan_lead]) cube([chan_deep + 1, eps, chan_w + 2 * chan_lead]);
             }
+        // the thumbscrew's hole, at the channel's closed end
+        translate([skid_out - chan_deep - screw_len, pin_setback, pin_z])
+            rotate([0, 90, 0]) cylinder(d = screw_d, h = screw_len + 0.1);
     }
 }
 

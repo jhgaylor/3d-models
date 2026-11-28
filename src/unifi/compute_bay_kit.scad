@@ -91,13 +91,14 @@ clip_v      = 12;             // clip thickness along the ledge
 spine_t     = 2;
 jaw_len     = 11;
 jaw_t       = 2.4;
-jaw_gap     = 1.75;           // ledge 1.65 + a little
-bump        = 0.25;           // friction bump on the top jaw
-hook_u      = 9.5;            // hook centre out from the ledge edge
+jaw_gap     = 1.85;           // ledge 1.65 + a little (1.75 spread the jaws)
+bump        = 0.1;            // friction bump on the top jaw (0.25 printed tight)
+hook_u      = 8.8;            // hook centre out from the ledge edge (ring
+                              // stays inside the 19.7 mm band)
 hook_z      = -15;            // hook centre below the ledge top
-hook_r      = 7;              // inner radius: a bundle up to ~14 mm
+hook_r      = 8;              // inner radius: a bundle up to ~16 mm
 hook_wall   = 2;
-hook_mouth  = 5;              // opening at the bottom, toward the wall
+hook_mouth  = 7;              // opening at the bottom, toward the wall
 
 /* ── Shelf pins (same as unifi_shelf_dock) ──────────── */
 hole_pitch = 6.0;
@@ -107,7 +108,7 @@ pin_head_d = 6.2;
 pin_head_t = 1.2;
 cbore_d    = 6.8;
 cbore_t    = 1.4;
-pin_peg    = 2.0;             // how far a pin pokes below the part
+pin_peg    = 4.0;             // how far a pin pokes below the part (into the shelf)
 pin_count  = 6;
 
 eps = 0.01;
@@ -203,9 +204,15 @@ module clip_profile() {
 module clip() { linear_extrude(clip_v) clip_profile(); }
 
 /* ── Pins ───────────────────────────────────────────── */
+// The shaft starts under the head: it spans the fin below the
+// counterbore, then pokes pin_peg out the bottom, tapered at the tip.
 module pin() {
+    shaft = fin_h - cbore_t + pin_peg;
     cylinder(d = pin_head_d, h = pin_head_t);
-    cylinder(d = pin_d, h = fin_h - cbore_t + pin_peg);
+    translate([0, 0, pin_head_t - eps]) {
+        cylinder(d = pin_d, h = shaft - 0.5 + eps);
+        translate([0, 0, shaft - 0.5]) cylinder(d1 = pin_d, d2 = pin_d - 1, h = 0.5);
+    }
 }
 
 /* ── Layout helpers (scenes include this file) ──────── */

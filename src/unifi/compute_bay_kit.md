@@ -55,7 +55,7 @@ a cooling plan for a bay that was running too hot:
 
 - **Print `fit-test` first.**
   - Push the clip onto a side ledge. It should snap on with light force and stay put.
-    The friction bump is `bump` (0.25 mm). Lower it if the clip is too tight.
+    The friction bump is `bump` (0.1 mm; 0.25 printed tight). Lower it if the clip is too tight, raise it if it slides off.
   - Drop the pin through the fin slice into the shelf's holes. It should go in easily.
 - **Settings:** PETG, 0.2 mm layers, 3 walls, 20% infill. No supports anywhere.
   - The deck prints rails down, lips up.

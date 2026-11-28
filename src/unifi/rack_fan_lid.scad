@@ -4,7 +4,12 @@
    A lid for the top of the U-Rack-6U-TL with four 120 mm
    slim fans hanging under it, blowing up and out. Over
    each fan the plate is cut as a swept-vane grille; the
-   rest of the plate is the artwork, chosen by `art`:
+   rest of the plate is the artwork, chosen by `art`.
+   Or, with style = "skeleton" (the default), the plate
+   keeps only its border, a square round each fan for the
+   clip sockets, the seam bars, ties and the controller
+   pad, and is open everywhere else (the fans too, unless
+   skel_guard). The artwork, for style = "art":
 
      wood     (default) a halftone of wood grain that
               bunches and curves round the four fans like
@@ -85,7 +90,8 @@ include <vendor/lid_halftone.inc>
 /* ── Selection (set by presets) ─────────────────────── */
 part = "tile";      // [tile, clips, keys, fit_test, assembled, none]
 tile = "sw";        // [sw, se, nw, ne]
-art  = "wood";      // [wood, waves, ripples, skyline, hex]
+style = "skeleton"; // [skeleton, art]
+art  = "wood";      // [wood, waves, ripples, skyline, hex]  (style = "art")
 
 /* ── Rack top (measured; see boston_lid.scad) ───────── */
 top_w    = 499.2;
@@ -113,6 +119,16 @@ fan_cx = open_w / 4;
 fan_cy = open_d / 4;
 fan_at = [for (sx = [-1, 1], sy = [-1, 1]) [sx * fan_cx, sy * fan_cy]];
 fan_keep = 7;       // solid band around each fan's square
+
+/* ── Skeleton (style = "skeleton") ──────────────────── */
+// Only the plastic that does a job: the border over the rack's rails,
+// a square round each fan carrying its clip sockets, the two seam bars
+// the keys bridge, a tie from each fan to the bars and the border, and
+// a pad for the controller. Everything else is open.
+skel_lip   = 4;     // border reaches this far in over the opening
+skel_bar   = 32;    // seam bars: a key (26 long) plus a margin
+skel_tie   = 12;    // ties from each fan square
+skel_guard = false; // true: keep the swept-vane grille over each fan
 
 /* ── Fan grille ─────────────────────────────────────── */
 grille_r = 56;      // blade sweep of a 120 mm fan
@@ -380,9 +396,40 @@ module at_clips() {
 }
 
 /* ── Lid ────────────────────────────────────────────── */
+module fan_hole() {
+    if (skel_guard) fan_grille(); else circle(r = grille_r, $fn = 120);
+}
+
+module skeleton() {
+    intersection() {
+        outline();
+        difference() {
+            union() {
+                difference() {
+                    outline();
+                    square([open_w - 2 * skel_lip, open_d - 2 * skel_lip], center = true);
+                }
+                square([skel_bar, top_d], center = true);
+                square([top_w, skel_bar], center = true);
+                for (c = fan_at) {
+                    translate(c) square(fan_w + 2 * fan_keep, center = true);
+                    // ties along the fan's centre lines, out to the bars
+                    // and the border (the fan hole cuts their middles)
+                    translate([c[0] > 0 ? 0 : -open_w / 2, c[1] - skel_tie / 2])
+                        square([open_w / 2, skel_tie]);
+                    translate([c[0] - skel_tie / 2, c[1] > 0 ? 0 : -open_d / 2])
+                        square([skel_tie, open_d / 2]);
+                }
+                translate(ctl_at) square([ctl_size[0] + 12, ctl_size[1] + 8], center = true);  // meets the fan square and the border
+            }
+            for (c = fan_at) translate(c) fan_hole();
+        }
+    }
+}
+
 module plate() {
     difference() {
-        linear_extrude(plate_t) difference() {
+        linear_extrude(plate_t) if (style == "skeleton") skeleton(); else difference() {
             outline();
             for (c = fan_at) translate(c) fan_grille();
             art_field();
@@ -445,7 +492,9 @@ module fit_test() {
 module clip_print_stub() {
     on_bed() intersection() {
         clip();
-        translate([-20, tab_c - tab_w / 2 - 4, leg_z - 1]) cube([40, tab_w + 8, 20]);
+        // tall enough to keep the whole tab (it stands sock_d above the
+        // leg); a fixed 20 cut it off 0.8 mm up, leaving only its neck
+        translate([-20, tab_c - tab_w / 2 - 4, leg_z - 1]) cube([40, tab_w + 8, -leg_z + sock_d + 2]);
     }
 }
 
