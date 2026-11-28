@@ -5,6 +5,22 @@ slim fans hanging underneath, blowing up and out of the rack. It replaces the Bo
 lid when you want airflow: the Boston lid is about 11% open, this one is grille nearly
 everywhere over the opening.
 
+Two styles, chosen with `style`:
+
+- **`skeleton`** (default): only the plastic that does a job. That's the border over the
+  rack's rails, a square round each fan carrying its clip sockets, and the two seam bars
+  the keys bridge. Add a tie from each fan to the bars and the border, and a pad for the
+  controller. Everything else, fans included, is open. It's the quickest print and
+  uses the least filament. Set `skel_guard = true` to keep the vane grille over each fan
+  as a finger and cable guard.
+  - The open areas next to the fans let air in from the room as well as out. With the
+    fans running, some of what they move is room air pulled down through the openings
+    rather than hot air from the bay. If the bay runs warmer than you'd like, the `art`
+    style is the fix: it's mostly solid away from the fans.
+- **`art`**: the original lid, described below.
+
+The `art` style:
+
 - **Fan grilles:** each fan gets a swept-vane grille: a solid hub over the motor, three
   rings, and seven curved vanes.
 - **A halftone picture:** the rest of the opening is a picture made of vent holes. Each
